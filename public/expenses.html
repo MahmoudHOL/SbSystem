@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>المصروفات | SB Smart</title>
+  <link href="/vendor/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/vendor/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/electron-titlebar.css">
+</head>
+<body>
+  <button class="sidebar-toggle" id="sidebarToggle" type="button" aria-label="فتح القائمة">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h5 class="mb-0">
+        <i class="fas fa-tachometer-alt me-2"></i>
+        لوحة التحكم
+      </h5>
+    </div>
+    <div class="sidebar-body">
+      <ul class="sidebar-nav">
+        <li><a href="/dashboard"><i class="fas fa-home"></i> الرئيسية</a></li>
+        <li><a href="/warehouses"><i class="fas fa-warehouse"></i> مخازن</a></li>
+        <li><a href="/expenses" class="active"><i class="fas fa-money-bill-wave"></i> المصروفات</a></li>
+        <li><a href="/settings"><i class="fas fa-cog"></i> الإعدادات</a></li>
+        <li class="mt-4"><a href="/logout" class="sidebar-logout"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="main-content" id="mainContent">
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+      <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1">
+          <span class="brand-sb">SB</span><span class="brand-smart"> Smart</span>
+        </span>
+        <div class="navbar-nav ms-auto">
+          <span class="navbar-text">
+            <i class="fas fa-user me-1"></i>
+            <span id="userDisplayName">...</span>
+          </span>
+        </div>
+      </div>
+    </nav>
+
+    <div class="dashboard-container">
+      <div class="container">
+        <h1 class="page-title mb-4">
+          <a href="/dashboard" class="text-decoration-none text-muted me-2"><i class="fas fa-arrow-right"></i></a>
+          <i class="fas fa-money-bill-wave me-2"></i>
+          المصروفات
+        </h1>
+
+        <div class="feature-card p-4 mb-4" id="add-expense-card">
+          <h5 class="mb-3">إضافة مصروف</h5>
+          <div class="row g-3 align-items-end">
+            <div class="col-md-2">
+              <label for="expense-warehouse" class="form-label small">المخزن</label>
+              <select class="form-select form-select-sm" id="expense-warehouse" required>
+                <option value="">اختر المخزن</option>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <label for="expense-direction" class="form-label small">النوع</label>
+              <select class="form-select form-select-sm" id="expense-direction">
+                <option value="out">خارج</option>
+                <option value="in">وارد</option>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <label for="expense-category" class="form-label small">فئة المصروف</label>
+              <select class="form-select form-select-sm" id="expense-category" required>
+                <option value="">اختر الفئة</option>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <label for="expense-payment-method" class="form-label small">طريقة الدفع</label>
+              <select class="form-select form-select-sm" id="expense-payment-method">
+                <option value="">اختياري</option>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <label for="expense-amount" class="form-label small">المبلغ (ج.م)</label>
+              <input type="number" class="form-control form-control-sm" id="expense-amount" min="0" step="0.01" placeholder="0.00" required>
+            </div>
+            <div class="col-md-2">
+              <label for="expense-date" class="form-label small">التاريخ</label>
+              <input type="date" class="form-control form-control-sm" id="expense-date">
+            </div>
+            <div class="col-md-3">
+              <label for="expense-note" class="form-label small">ملاحظة</label>
+              <textarea class="form-control form-control-sm" id="expense-note" rows="3" placeholder="اختياري"></textarea>
+            </div>
+            <div class="col-md-2">
+              <button type="button" class="btn btn-dashboard btn-info btn-sm w-100" id="btn-add-expense">
+                <i class="fas fa-plus me-1"></i>
+                إضافة مصروف
+              </button>
+            </div>
+            <div class="col-md-2">
+              <button type="button" class="btn btn-outline-secondary btn-sm d-none" id="btn-cancel-expense-edit" title="إلغاء التعديل">
+                <i class="fas fa-times me-1"></i>
+                إلغاء
+              </button>
+            </div>
+          </div>
+          <p id="expense-form-message" class="form-message small mb-0 mt-2 d-none"></p>
+        </div>
+
+        <ul class="nav nav-tabs tabs-sb mb-3" id="expensesTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tab-expenses-log" data-bs-toggle="tab" data-bs-target="#panel-expenses-log" type="button" role="tab">سجل المصروفات</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-expenses-report" data-bs-toggle="tab" data-bs-target="#panel-expenses-report" type="button" role="tab">تقرير المصروفات</button>
+          </li>
+        </ul>
+
+        <div class="tab-content" id="expensesTabContent">
+          <div class="tab-pane fade show active" id="panel-expenses-log" role="tabpanel">
+            <div class="feature-card p-4">
+              <h5 class="mb-3">سجل المصروفات</h5>
+              <div class="table-responsive">
+                <table class="table table-sm table-hover mb-0">
+                  <thead>
+                    <tr>
+                      <th>تاريخ المصروف</th>
+                      <th>تاريخ الإدخال</th>
+                      <th>المخزن</th>
+                      <th>النوع</th>
+                      <th>الفئة</th>
+                      <th>طريقة الدفع</th>
+                      <th>المبلغ</th>
+                      <th>ملاحظة</th>
+                      <th>المستخدم</th>
+                      <th>إجراءات</th>
+                    </tr>
+                  </thead>
+                  <tbody id="expenses-tbody">
+                    <tr>
+                      <td colspan="10" class="text-center text-muted py-3">جاري تحميل المصروفات...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="small text-muted mt-2 mb-0">
+                إدارة فئات المصروفات من <a href="/settings/system">إعدادات النظام</a> → تبويب «فئات المصروفات».
+              </p>
+            </div>
+          </div>
+
+          <div class="tab-pane fade" id="panel-expenses-report" role="tabpanel">
+            <div class="feature-card p-4">
+              <h5 class="mb-3">تقرير المصروفات</h5>
+              <div class="row g-3 align-items-end mb-3">
+                <div class="col-auto">
+                  <label for="report-from" class="form-label small">من تاريخ</label>
+                  <input type="date" class="form-control form-control-sm" id="report-from">
+                </div>
+                <div class="col-auto">
+                  <label for="report-to" class="form-label small">إلى تاريخ</label>
+                  <input type="date" class="form-control form-control-sm" id="report-to">
+                </div>
+                <div class="col-auto">
+                  <button type="button" class="btn btn-dashboard btn-info btn-sm" id="btn-load-report">
+                    <i class="fas fa-chart-bar me-1"></i>
+                    عرض التقرير
+                  </button>
+                </div>
+              </div>
+              <div id="expenses-report-content">
+                <p class="text-muted small">اختر الفترة ثم اضغط «عرض التقرير».</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="text-center py-3 mt-5">
+      <div class="container-fluid">
+        <p class="mb-0 footer-text">
+          <i class="fas fa-copyright me-1"></i>
+          <span id="currentYear"></span> SB Smart · conver_lang
+        </p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/warehouses-sync.js"></script>
+  <script src="/js/electron-titlebar.js"></script>
+  <script src="/js/dashboard.js"></script>
+  <script src="/js/expenses.js"></script>
+</body>
+</html>

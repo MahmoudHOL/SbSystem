@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>المخازن | SB Smart</title>
+  <link href="/vendor/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/vendor/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/warehouses.css">
+  <link rel="stylesheet" href="/css/invoices.css">
+  <link rel="stylesheet" href="/css/electron-titlebar.css">
+</head>
+<body>
+  <button class="sidebar-toggle" id="sidebarToggle" type="button" aria-label="فتح القائمة">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h5 class="mb-0">
+        <i class="fas fa-tachometer-alt me-2"></i>
+        لوحة التحكم
+      </h5>
+    </div>
+    <div class="sidebar-body">
+      <ul class="sidebar-nav">
+        <li>
+          <a href="/dashboard">
+            <i class="fas fa-home"></i>
+            الرئيسية
+          </a>
+        </li>
+        <li>
+          <a href="/warehouses" class="active">
+            <i class="fas fa-warehouse"></i>
+            مخازن
+          </a>
+        </li>
+        <li>
+          <a href="/settings">
+            <i class="fas fa-cog"></i>
+            الإعدادات
+          </a>
+        </li>
+        <li class="mt-4">
+          <a href="/logout" class="sidebar-logout">
+            <i class="fas fa-sign-out-alt"></i>
+            تسجيل الخروج
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="main-content" id="mainContent">
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+      <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1">
+          <span class="brand-sb">SB</span><span class="brand-smart"> Smart</span>
+        </span>
+        <div class="navbar-nav ms-auto">
+          <span class="navbar-text">
+            <i class="fas fa-user me-1"></i>
+            <span id="userDisplayName">...</span>
+          </span>
+        </div>
+      </div>
+    </nav>
+
+    <div class="dashboard-container">
+      <div class="container">
+        <h1 class="page-title mb-4">
+          <i class="fas fa-warehouse me-2"></i>
+          المخازن والمنتجات
+        </h1>
+
+        <!-- تابات: المخازن | المنتجات | نقل مخزون | فواتير -->
+        <ul class="nav nav-tabs tabs-sb mb-4" id="warehousesTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tab-warehouses" data-bs-toggle="tab" data-bs-target="#panel-warehouses" type="button" role="tab">المخازن</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-products" data-bs-toggle="tab" data-bs-target="#panel-products" type="button" role="tab">إذن توريد</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-suppliers-list" data-bs-toggle="tab" data-bs-target="#panel-suppliers-list" type="button" role="tab">قائمة الموردين</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-transfer" data-bs-toggle="tab" data-bs-target="#panel-transfer" type="button" role="tab">نقل مخزون</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-invoices" data-bs-toggle="tab" data-bs-target="#panel-invoices" type="button" role="tab">فواتير</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-log" data-bs-toggle="tab" data-bs-target="#panel-log" type="button" role="tab">سجل الشراء والبيع</button>
+          </li>
+        </ul>
+
+        <div class="tab-content" id="warehousesTabContent">
+          <!-- تاب المخازن -->
+          <div class="tab-pane fade show active" id="panel-warehouses" role="tabpanel">
+        <!-- إضافة مخزن -->
+        <div class="warehouses-card card-form" id="card-add-warehouse">
+          <h5 class="card-form-title">
+            <i class="fas fa-plus-circle me-2"></i>
+            إضافة مخزن
+          </h5>
+          <form id="add-warehouse-form" class="row g-3 align-items-end">
+            <div class="col-md-6 col-lg-4">
+              <label for="warehouse-name" class="form-label">اسم المخزن</label>
+              <input type="text" class="form-control" id="warehouse-name" name="name" placeholder="أدخل اسم المخزن" required>
+            </div>
+            <div class="col-auto">
+              <button type="submit" class="btn btn-dashboard btn-info" id="btn-add">
+                <i class="fas fa-plus me-2"></i>
+                إضافة
+              </button>
+            </div>
+          </form>
+          <p id="form-message" class="form-message mt-2"></p>
+        </div>
+
+        <!-- قائمة المخازن -->
+        <div class="warehouses-card card-table">
+          <h5 class="card-form-title">
+            <i class="fas fa-list me-2"></i>
+            قائمة المخازن
+          </h5>
+          <div class="table-responsive">
+            <table class="table table-warehouses">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>اسم المخزن</th>
+                  <th>تاريخ الإضافة</th>
+                </tr>
+              </thead>
+              <tbody id="warehouses-tbody">
+                <tr><td colspan="3" class="text-center text-muted">جاري التحميل...</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p id="table-empty" class="text-muted text-center py-3 d-none">لا توجد مخازن. أضف مخزناً جديداً.</p>
+        </div>
+          </div>
+
+          <!-- تاب المنتجات -->
+          <div class="tab-pane fade" id="panel-products" role="tabpanel">
+            <div class="warehouses-card card-form" id="dispatch-create-supplier-card">
+              <h5 class="card-form-title">
+                <i class="fas fa-plus-circle me-2"></i>
+                إنشاء مورد
+              </h5>
+              <form id="add-supplier-form" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                  <label for="supplier-name" class="form-label">اسم المورد</label>
+                  <input type="text" class="form-control" id="supplier-name" name="name" placeholder="اسم المورد" required>
+                </div>
+                <div class="col-md-3">
+                  <label for="supplier-phone" class="form-label">رقم الهاتف</label>
+                  <input type="text" class="form-control" id="supplier-phone" name="phone" placeholder="رقم الهاتف" required>
+                </div>
+                <div class="col-md-4">
+                  <label for="supplier-note" class="form-label">ملاحظة <span class="text-muted">(اختياري)</span></label>
+                  <input type="text" class="form-control" id="supplier-note" name="note" placeholder="ملاحظة إن أردت">
+                </div>
+                <div class="col-auto">
+                  <button type="submit" class="btn btn-dashboard btn-info" id="btn-add-supplier">
+                    <i class="fas fa-plus me-2"></i>
+                    إضافة
+                  </button>
+                </div>
+              </form>
+              <p id="supplier-form-message" class="form-message mt-2"></p>
+            </div>
+            <div class="warehouses-card card-form" id="dispatch-add-product-card">
+              <h5 class="card-form-title">
+                <i class="fas fa-plus-circle me-2"></i>
+                إضافة صنف
+              </h5>
+              <form id="add-product-form" class="row g-3 align-items-end">
+                <div class="col-md-3 position-relative">
+                  <label for="product-name" class="form-label">اسم الصنف</label>
+                  <input type="text" class="form-control" id="product-name" name="name" placeholder="ابحث أو اكتب اسم الصنف" autocomplete="off" required>
+                  <div id="product-name-suggestions" class="list-group product-name-suggestions shadow d-none" role="listbox" aria-label="اقتراحات الأصناف"></div>
+                </div>
+                <div class="col-md-3">
+                  <label for="product-barcode" class="form-label">الباركود (اختياري)</label>
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="product-barcode"
+                      name="barcode"
+                      placeholder="AA11BB22CC33"
+                      maxlength="12"
+                    >
+                    <button
+                      type="button"
+                      class="btn btn-outline-secondary"
+                      id="btn-generate-barcode"
+                      title="توليد باركود عشوائي من 12 رقم"
+                    >
+                      <i class="fas fa-magic"></i>
+                    </button>
+                  </div>
+                  <small class="text-muted d-block mt-1">اتركه فارغاً إن لم يتوفر. وإذا كُتب فيجب أن يكون 12 خانة (حروف أو أرقام).</small>
+                </div>
+                <div class="col-md-2">
+                  <label for="add-product-warehouse" class="form-label">المخزن</label>
+                  <select class="form-select form-control input-warehouse-select" id="add-product-warehouse" name="warehouse_id">
+                    <option value="">— اختر المخزن —</option>
+                  </select>
+                </div>
+                <div class="col-md-2">
+                  <label for="add-product-supplier" class="form-label">المورد</label>
+                  <select class="form-select form-control" id="add-product-supplier" name="supplier_id">
+                    <option value="">بدون مورد</option>
+                  </select>
+                </div>
+                <div class="col-md-2 col-lg-2">
+                  <label for="product-quantity" class="form-label">الكمية</label>
+                  <input type="number" class="form-control" id="product-quantity" name="quantity" placeholder="0" min="0" step="0.001" value="0">
+                </div>
+                <div class="col-md-2 col-lg-2">
+                  <div class="form-check mt-4 pt-2">
+                    <input class="form-check-input" type="checkbox" id="dispatch-use-serial">
+                    <label class="form-check-label" for="dispatch-use-serial">استعمل serial</label>
+                  </div>
+                </div>
+                <div class="col-12 d-none" id="dispatch-serial-fields-wrap">
+                  <div class="border rounded p-2">
+                    <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
+                      <button type="button" class="btn btn-sm btn-outline-secondary" id="btn-generate-serial-ean">
+                        <i class="fas fa-barcode me-1"></i>
+                        توليد Serial (EAN)
+                      </button>
+                      <small class="text-muted">سيتم إنشاء حقل لكل كمية عند اختيار "استعمل serial".</small>
+                    </div>
+                    <div class="row g-2" id="dispatch-serial-fields"></div>
+                  </div>
+                </div>
+                <div class="col-md-2 col-lg-2">
+                  <label for="product-purchase" class="form-label">سعر الشراء</label>
+                  <input type="number" class="form-control" id="product-purchase" name="purchase_price" placeholder="0" min="0" step="0.01" value="0">
+                </div>
+                <div class="col-md-2 col-lg-2">
+                  <label for="product-sale" class="form-label">سعر البيع</label>
+                  <input type="number" class="form-control" id="product-sale" name="sale_price" placeholder="0" min="0" step="0.01" value="0">
+                </div>
+                <div class="col-auto">
+                  <button type="submit" class="btn btn-dashboard btn-info" id="btn-add-product">
+                    <i class="fas fa-cart-plus me-2"></i>
+                    إضافة للسلة
+                  </button>
+                </div>
+                <div class="col-auto">
+                  <button type="button" class="btn btn-outline-light" id="btn-reset-add-product-form">
+                    <i class="fas fa-plus me-2"></i>
+                    منتج جديد
+                  </button>
+                </div>
+              </form>
+              <p id="product-form-message" class="form-message mt-2"></p>
+              <p id="product-lookup-hint" class="form-text text-muted small mb-0" aria-live="polite"></p>
+            </div>
+
+            <div class="warehouses-card card-table mb-3" id="dispatch-cart-card">
+              <h5 class="card-form-title">
+                <i class="fas fa-shopping-cart me-2"></i>
+                سلة المورد (إذن توريد)
+              </h5>
+              <p class="small text-muted mb-3">
+                تُضاف الأصناف هنا ثم تُسجَّل دفعة واحدة. المبلغ المدفوع أقل من المطلوب = يُسجَّل الباقي علينا للمورد، وأكثر = للمورد رصيد عندنا — نفس منطق فاتورة الشراء.
+              </p>
+              <p class="mb-2">
+                <strong>المورد الحالي:</strong>
+                <span id="dispatch-current-supplier-name" class="text-info">—</span>
+              </p>
+              <div class="table-responsive">
+                <table class="table table-warehouses">
+                  <thead>
+                    <tr>
+                      <th>المنتج</th>
+                      <th>الباركود</th>
+                      <th>الكمية</th>
+                      <th>سعر الشراء</th>
+                      <th>سعر البيع</th>
+                      <th>المجموع</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="dispatch-cart-tbody"></tbody>
+                </table>
+              </div>
+              <p id="dispatch-cart-empty" class="text-muted text-center py-3 mb-0">السلة فارغة. املأ النموذج أعلاه واضغط «إضافة للسلة».</p>
+              <div class="row g-3 align-items-end mt-3">
+                <div class="col-md-4 col-lg-3">
+                  <label class="form-label" for="dispatch-payment-method">طريقة الدفع</label>
+                  <select class="form-select" id="dispatch-payment-method">
+                    <option value="">بدون تحديد</option>
+                  </select>
+                </div>
+                <div class="col-md-4 col-lg-3">
+                  <label class="form-label" for="dispatch-amount-paid">المبلغ المدفوع</label>
+                  <input type="number" class="form-control" id="dispatch-amount-paid" min="0" step="0.01" value="0">
+                </div>
+                <div class="col-md-8 col-lg-6">
+                  <p class="mb-1"><strong>المبلغ المطلوب:</strong> <span id="dispatch-total-required">0.00</span></p>
+                  <p class="small text-muted mb-0">يتم توريد الكميات للمخزن المختار في النموذج عند «تسجيل الدفعة» فقط.</p>
+                </div>
+              </div>
+              <div class="d-flex flex-wrap gap-2 mt-3">
+                <button type="button" class="btn btn-dashboard btn-info" id="btn-dispatch-payment">
+                  <i class="fas fa-check me-1"></i>
+                  تسجيل الدفعة
+                </button>
+                <button type="button" class="btn btn-outline-secondary" id="btn-clear-dispatch-cart">
+                  <i class="fas fa-trash me-1"></i>
+                  مسح السلة
+                </button>
+              </div>
+              <p id="dispatch-payment-msg" class="form-message mt-2 mb-0"></p>
+            </div>
+
+            <div class="warehouses-card card-table">
+              <h5 class="card-form-title d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <span>
+                  <i class="fas fa-box me-2"></i>
+                  قائمة المنتجات
+                </span>
+                <button type="button" class="btn btn-dashboard btn-info" id="btn-open-minimum-stock-modal" data-bs-toggle="modal" data-bs-target="#modal-minimum-stock-global">
+                  <i class="fas fa-arrow-down-short-wide me-1"></i>
+                  الحد الأدنى للمخزون
+                </button>
+              </h5>
+              <div class="mb-3 d-flex align-items-center gap-2 flex-wrap">
+                <label for="products-warehouse-select" class="form-label mb-0">المخزن:</label>
+                <select class="form-select form-control input-warehouse-select" id="products-warehouse-select" style="max-width: 220px;">
+                  <option value="">— المجموع الكلي —</option>
+                </select>
+                <small class="text-muted">الكمية: للمخزن المختار، أو المجموع من كل المخازن إن لم تختر</small>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-warehouses">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>اسم المنتج</th>
+                      <th>الباركود</th>
+                      <th>المورد</th>
+                      <th>الكمية</th>
+                      <th>سعر الشراء</th>
+                      <th>سعر البيع</th>
+                      <th>الحد الأدنى</th>
+                      <th>إجراءات</th>
+                    </tr>
+                  </thead>
+                  <tbody id="products-tbody">
+                    <tr><td colspan="9" class="text-center text-muted">جاري التحميل...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p id="products-table-empty" class="text-muted text-center py-3 d-none">لا توجد منتجات. أضف منتجاً جديداً.</p>
+            </div>
+
+            <div data-include-html="/partials/warehouses/products-modals.html"></div>
+            </div>
+
+          <!-- تاب نقل مخزون بين المخازن -->
+          <div class="tab-pane fade" id="panel-transfer" role="tabpanel">
+            <div class="warehouses-card card-form mb-3">
+              <h5 class="card-form-title"><i class="fas fa-exchange-alt me-2"></i>نقل مخزون بين المخازن</h5>
+              <p class="small modal-helper-white mb-3">اختر المخزن المصدر والمخزن الهدف، ثم حدِّد الكميات التي تريد نقلها، أو انقل جميع كميات المخزن المصدر دفعة واحدة.</p>
+              <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                  <label class="form-label" for="transfer-from-warehouse">المخزن المصدر</label>
+                  <select class="form-select input-warehouse-select" id="transfer-from-warehouse">
+                    <option value="">— اختر المخزن المصدر —</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label" for="transfer-to-warehouse">المخزن الهدف</label>
+                  <select class="form-select input-warehouse-select" id="transfer-to-warehouse">
+                    <option value="">— اختر المخزن الهدف —</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label d-block">وضع النقل</label>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="transfer-mode" id="transfer-mode-partial" value="partial" checked>
+                    <label class="form-check-label" for="transfer-mode-partial">نقل أصناف محددة</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="transfer-mode" id="transfer-mode-all" value="all">
+                    <label class="form-check-label" for="transfer-mode-all">نقل كل كميات المخزن</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="transfer-products-wrap" class="warehouses-card card-table mb-3">
+              <h5 class="card-form-title"><i class="fas fa-boxes me-2"></i>الأصناف المتاحة في المخزن المصدر</h5>
+              <div class="mb-3 d-flex align-items-center gap-2 flex-wrap">
+                <label for="transfer-search" class="form-label mb-0">بحث بالاسم أو الباركود:</label>
+                <input type="text" class="form-control" id="transfer-search" placeholder="اكتب جزءاً من الاسم أو الباركود" style="max-width: 260px;">
+              </div>
+              <div class="table-responsive">
+                <table class="table table-warehouses">
+                  <thead>
+                    <tr>
+                      <th>المنتج</th>
+                      <th>الباركود</th>
+                      <th>المتاح في المصدر</th>
+                      <th>الكمية المراد نقلها</th>
+                      <th>خيارات</th>
+                    </tr>
+                  </thead>
+                  <tbody id="transfer-products-tbody">
+                    <tr><td colspan="5" class="text-center text-muted">اختر المخزن المصدر لعرض الأصناف.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <button type="button" class="btn btn-dashboard btn-info" id="btn-execute-transfer">
+                <i class="fas fa-check me-1"></i>تنفيذ نقل الكميات المحددة
+              </button>
+              <button type="button" class="btn btn-outline-light" id="btn-execute-transfer-all" style="display:none;">
+                <i class="fas fa-exchange-alt me-1"></i>نقل كل كميات المخزن المصدر
+              </button>
+              <p id="transfer-msg" class="form-message mt-2 mb-0"></p>
+            </div>
+
+            <div class="warehouses-card card-table mt-4">
+              <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                <div>
+                  <h5 class="card-form-title mb-1"><i class="fas fa-history me-2"></i>سجل نقل المخزون</h5>
+                  <p class="small modal-helper-white mb-0">متابعة عمليات النقل: من أي مخزن إلى أي مخزن، المنتجات المنقولة وكمياتها، ومن قام بالنقل.</p>
+                </div>
+                <a href="/warehouses/transfer-log" class="btn btn-dashboard btn-info">
+                  <i class="fas fa-external-link-alt me-1"></i>صفحة السجل الكامل
+                </a>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-warehouses">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>من مخزن</th>
+                      <th>إلى مخزن</th>
+                      <th>عدد الأصناف</th>
+                      <th>من قام</th>
+                      <th>التاريخ</th>
+                      <th>تفاصيل</th>
+                    </tr>
+                  </thead>
+                  <tbody id="transfer-log-tbody">
+                    <tr><td colspan="7" class="text-center text-muted">جاري التحميل...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-pane fade" id="panel-suppliers-list" role="tabpanel">
+            <div class="warehouses-card card-table">
+              <h5 class="card-form-title">
+                <i class="fas fa-truck me-2"></i>
+                قائمة الموردين
+              </h5>
+              <div class="table-responsive">
+                <table class="table table-warehouses">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>اسم المورد</th>
+                      <th>رقم الهاتف</th>
+                      <th>ملاحظة</th>
+                      <th>تاريخ الإضافة</th>
+                      <th>كشف الحساب</th>
+                    </tr>
+                  </thead>
+                  <tbody id="suppliers-tbody">
+                    <tr><td colspan="6" class="text-center text-muted">جاري التحميل...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p id="suppliers-table-empty" class="text-muted text-center py-3 d-none">لا يوجد موردون. أضف مورداً جديداً.</p>
+            </div>
+          </div>
+
+          <!-- نافذة كشف حساب مورد (مدين / دائن) -->
+            <div class="modal fade" id="modal-supplier-statement" tabindex="-1" aria-labelledby="modal-supplier-statement-label" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered modal-xl">
+                <div class="modal-content inv-supplier-modal">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="modal-supplier-statement-label"><i class="fas fa-balance-scale me-2"></i>كشف حساب مورد</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                  </div>
+                  <div class="modal-body">
+                    <p id="supplier-statement-meta" class="mb-3 small"></p>
+                    <div class="table-responsive">
+                      <table class="table table-sm inv-supplier-table">
+                        <thead>
+                          <tr>
+                            <th># الفاتورة</th>
+                            <th>التاريخ</th>
+                            <th>عدد المنتجات</th>
+                            <th>المبلغ المطلوب</th>
+                            <th>المدفوع</th>
+                            <th>مدين (علينا)</th>
+                            <th>دائن (له عندنا)</th>
+                            <th>الرصيد بعد الحركة</th>
+                            <th>المستخدم</th>
+                            <th>تفاصيل المنتجات</th>
+                          </tr>
+                        </thead>
+                        <tbody id="supplier-statement-tbody">
+                        </tbody>
+                      </table>
+                    </div>
+                    <div id="supplier-statement-totals" class="mt-2 small"></div>
+                    <p class="small text-muted mt-2 mb-0">
+                      <i class="fas fa-info-circle me-1"></i>
+                      الرصيد الموجب يعني أنك مدين للمورد، والرصيد السالب يعني أن المورد مدين لك.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          <!-- تاب فواتير (شكل مبيعات الجملة: عمودين) -->
+          <div class="tab-pane fade" id="panel-invoices" role="tabpanel">
+            <ul class="nav nav-pills mb-3">
+              <li class="nav-item">
+                <button class="nav-link active" id="pill-purchase" type="button">فاتورة شراء</button>
+              </li>
+              <li class="nav-item">
+                <button class="nav-link" id="pill-sale" type="button">فاتورة بيع</button>
+              </li>
+            </ul>
+
+            <div id="purchase-invoice-form" class="invoice-panel">
+              <div class="invoice-cashier-container">
+                <!-- عمود البحث والإضافة -->
+                <div class="invoice-product-grid">
+                  <h5 class="card-form-title"><i class="fas fa-barcode me-2"></i>إضافة صنف للسلة</h5>
+                  <div class="search-bar">
+                    <input type="text" id="inv-barcode" placeholder="ابحث بالباركود (12 رقم)..." maxlength="12" inputmode="numeric">
+                  </div>
+                  <div class="search-actions">
+                    <button type="button" class="btn btn-dashboard btn-info" id="btn-lookup-barcode"><i class="fas fa-search me-1"></i>بحث</button>
+                  </div>
+                  <div id="inv-products-list" class="inv-products-list mt-3" aria-label="قائمة المنتجات للإضافة للسلة">
+                    <p class="inv-products-placeholder text-center py-3 mb-0">جاري تحميل المنتجات...</p>
+                  </div>
+                  <div id="inv-manual-row" class="inv-manual-form d-none">
+                    <div class="row g-2">
+                      <div class="col-12"><label class="form-label">اسم المنتج</label><input type="text" class="form-control" id="inv-name" placeholder="الاسم"></div>
+                      <div class="col-6"><label class="form-label">الباركود</label><input type="text" class="form-control" id="inv-manual-barcode" placeholder="اختياري"></div>
+                      <div class="col-6"><label class="form-label">الكمية</label><input type="number" class="form-control" id="inv-qty" min="0.001" step="0.001" value="1"></div>
+                      <div class="col-6"><label class="form-label">سعر الشراء</label><input type="number" class="form-control" id="inv-purchase" min="0" step="0.01" value="0"></div>
+                      <div class="col-6"><label class="form-label">سعر البيع</label><input type="number" class="form-control" id="inv-sale" min="0" step="0.01" value="0"></div>
+                      <div class="col-12">
+                        <button type="button" class="btn btn-dashboard btn-info mt-2" id="btn-add-to-cart"><i class="fas fa-plus me-1"></i>إضافة للسلة</button>
+                      </div>
+                    </div>
+                  </div>
+                  <p id="inv-lookup-msg" class="form-message mb-0 mt-2"></p>
+                </div>
+
+                <!-- عمود السلة -->
+                <div class="invoice-cart-section">
+                  <h3><i class="fas fa-shopping-cart me-2"></i>سلة الشراء</h3>
+                  <div class="invoice-customer-info">
+                    <h5><i class="fas fa-truck me-1"></i>معلومات الفاتورة</h5>
+                    <label>المخزن</label>
+                    <select id="inv-warehouse">
+                      <option value="">— اختر المخزن —</option>
+                    </select>
+                    <label>المورد</label>
+                    <select id="inv-supplier">
+                      <option value="">بدون مورد</option>
+                    </select>
+                    <label>طريقة الدفع</label>
+                    <select id="inv-payment-method">
+                      <option value="">بدون تحديد</option>
+                    </select>
+                    <label>المبلغ المدفوع</label>
+                    <input type="number" id="inv-amount-paid" min="0" step="0.01" value="0" placeholder="0">
+                  </div>
+                  <div class="invoice-cart-items">
+                    <table class="invoice-cart-table">
+                      <thead>
+                        <tr>
+                          <th>المنتج</th>
+                          <th>الباركود</th>
+                          <th>الكمية</th>
+                          <th>شراء</th>
+                          <th>بيع</th>
+                          <th>المجموع</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody id="inv-cart-tbody"></tbody>
+                    </table>
+                  </div>
+                  <p id="inv-cart-empty" class="inv-empty-msg text-center py-3 mb-0">السلة فارغة. ابحث بالباركود أو أضف صنفاً يدوياً.</p>
+                  <div class="invoice-summary-box">
+                    <h3 id="inv-total-display">المجموع: 0.00</h3>
+                  </div>
+                  <div class="invoice-summary-rows">
+                    <div class="invoice-summary-row">
+                      <span>عدد القطع:</span>
+                      <span id="inv-total-pieces">0</span>
+                    </div>
+                    <div class="invoice-summary-row">
+                      <span>المبلغ المطلوب:</span>
+                      <span id="inv-total-amount">0.00</span>
+                    </div>
+                  </div>
+                  <div class="invoice-action-buttons">
+                    <button type="button" class="btn-inv-checkout" id="btn-submit-purchase"><i class="fas fa-check"></i> تسجيل الفاتورة</button>
+                    <button type="button" class="btn-inv-clear" id="btn-clear-inv-cart"><i class="fas fa-trash"></i> مسح السلة</button>
+                  </div>
+                  <p id="inv-submit-msg" class="form-message mt-2 mb-0"></p>
+                </div>
+              </div>
+
+              <!-- نافذة تغيير سعر صنف في السلة -->
+              <div class="modal fade" id="modal-change-price" tabindex="-1" aria-labelledby="modal-change-price-label" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content inv-modal-price">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="modal-change-price-label"><i class="fas fa-tag me-2"></i>تغيير السعر</h5>
+                      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                    </div>
+                    <div class="modal-body">
+                      <p id="modal-change-price-product-name" class="mb-3 text-break"></p>
+                      <div class="mb-3">
+                        <label class="form-label">سعر الشراء الجديد</label>
+                        <input type="number" id="modal-purchase-price" class="form-control" min="0" step="0.01" placeholder="0.00">
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label">سعر البيع الجديد</label>
+                        <input type="number" id="modal-sale-price" class="form-control" min="0" step="0.01" placeholder="0.00">
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                      <button type="button" class="btn btn-dashboard btn-info" id="btn-apply-price"><i class="fas fa-check me-1"></i>تطبيق</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="warehouses-card card-table invoice-history-card">
+                <h5 class="card-form-title"><i class="fas fa-history me-2"></i>تسجيل فواتير الشراء</h5>
+                <div class="table-responsive">
+                  <table class="table table-warehouses">
+<thead>
+                    <tr>
+                        <th>#</th>
+                        <th>المورد</th>
+                        <th>المخزن</th>
+                        <th>المبلغ المطلوب</th>
+                        <th>المدفوع</th>
+                        <th>التاريخ</th>
+                        <th>تفاصيل</th>
+                        <th>مرتجع</th>
+                      </tr>
+                    </thead>
+                    <tbody id="inv-list-tbody">
+                      <tr><td colspan="8" class="text-center text-muted">جاري التحميل...</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p class="small text-muted mt-2 mb-0"><i class="fas fa-info-circle me-1"></i>بعد تسجيل الفاتورة تُضاف الكميات تلقائياً للمخزن الذي اخترته.</p>
+              </div>
+
+              <!-- نافذة تفاصيل فاتورة الشراء (الأصناف والكميات) -->
+              <div class="modal fade" id="modal-invoice-details" tabindex="-1" aria-labelledby="modal-invoice-details-label" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                  <div class="modal-content inv-details-modal">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="modal-invoice-details-label"><i class="fas fa-file-invoice me-2"></i>تفاصيل فاتورة الشراء</h5>
+                      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                    </div>
+                    <div class="modal-body">
+                      <p id="inv-details-meta" class="mb-3 small"></p>
+                      <div class="table-responsive">
+                        <table class="table table-sm inv-details-table">
+                          <thead>
+                            <tr>
+                              <th>المنتج</th>
+                              <th>الباركود</th>
+                              <th>الكمية</th>
+                              <th>سعر الشراء</th>
+                              <th>سعر البيع</th>
+                              <th>المجموع</th>
+                            </tr>
+                          </thead>
+                          <tbody id="inv-details-tbody"></tbody>
+                        </table>
+                      </div>
+                      <p class="small text-muted mt-2 mb-0"><i class="fas fa-warehouse me-1"></i>الكميات المذكورة أعلاه مُضافة تلقائياً للمخزن المختار في الفاتورة.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- نافذة مرتجع فاتورة الشراء -->
+              <div class="modal fade" id="modal-purchase-return" tabindex="-1" aria-labelledby="modal-purchase-return-label" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                  <div class="modal-content inv-details-modal">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="modal-purchase-return-label"><i class="fas fa-undo me-2"></i>مرتجع فاتورة الشراء</h5>
+                      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                    </div>
+                    <div class="modal-body">
+                      <p id="purchase-return-meta" class="mb-3 small"></p>
+                      <div class="table-responsive">
+                        <table class="table table-sm inv-details-table">
+                          <thead>
+                            <tr>
+                              <th>المنتج</th>
+                              <th>الباركود</th>
+                              <th>المباع بالفاتورة</th>
+                              <th>سعر الشراء</th>
+                              <th>الكمية المراد إرجاعها</th>
+                            </tr>
+                          </thead>
+                          <tbody id="purchase-return-tbody"></tbody>
+                        </table>
+                      </div>
+                      <p id="purchase-return-msg" class="form-message mt-2 mb-0"></p>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                      <button type="button" class="btn btn-dashboard btn-info" id="btn-submit-purchase-return">
+                        <i class="fas fa-check me-1"></i>تسجيل المرتجع
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- لوحة فاتورة البيع (أخوة لفاتورة الشراء) -->
+            <div id="sale-invoice-form" class="invoice-panel d-none">
+              <div class="invoice-cashier-container">
+                <div class="invoice-product-grid">
+                  <h5 class="card-form-title"><i class="fas fa-barcode me-2"></i>إضافة صنف لسلة البيع</h5>
+                  <p class="small text-muted mb-2">اختر المخزن أولاً. لا يُعرض منتجات الكمية 0، والكمية لا تتجاوز المتاح.</p>
+                  <div id="sale-products-list" class="inv-products-list mt-3">
+                    <p class="inv-products-placeholder text-center py-3 mb-0">اختر المخزن ثم سيتم تحميل المنتجات المتوفرة.</p>
+                  </div>
+                  <p id="sale-lookup-msg" class="form-message mb-0 mt-2"></p>
+                </div>
+                <div class="invoice-cart-section">
+                  <h3><i class="fas fa-shopping-cart me-2"></i>سلة البيع</h3>
+                  <div class="invoice-customer-info">
+                    <h5><i class="fas fa-info-circle me-1"></i>معلومات الفاتورة</h5>
+                    <label>المخزن</label>
+                    <select id="sale-warehouse">
+                      <option value="">— اختر المخزن —</option>
+                    </select>
+                    <label>المورد</label>
+                    <select id="sale-supplier">
+                      <option value="">بدون مورد</option>
+                    </select>
+                    <label>طريقة الدفع</label>
+                    <select id="sale-payment-method">
+                      <option value="">بدون تحديد</option>
+                    </select>
+                    <label>المبلغ المدفوع (من العميل)</label>
+                    <input type="number" id="sale-amount-paid" min="0" step="0.01" value="0" placeholder="0">
+                    <p class="small text-muted mb-0 mt-1">إذا دفع العميل أقل من المطلوب = مدين لنا. إذا دفع أكثر = له مال عندنا.</p>
+                  </div>
+                  <div class="invoice-cart-items">
+                    <table class="invoice-cart-table">
+                      <thead>
+                        <tr>
+                          <th>المنتج</th>
+                          <th>الباركود</th>
+                          <th>الكمية</th>
+                          <th>سعر البيع</th>
+                          <th>المجموع</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody id="sale-cart-tbody"></tbody>
+                    </table>
+                  </div>
+                  <p id="sale-cart-empty" class="inv-empty-msg text-center py-3 mb-0">السلة فارغة. اختر المخزن ثم أضف أصنافاً من القائمة.</p>
+                  <div class="invoice-summary-box">
+                    <h3 id="sale-total-display">المجموع: 0.00</h3>
+                  </div>
+                  <div class="invoice-summary-rows">
+                    <div class="invoice-summary-row">
+                      <span>المبلغ المطلوب:</span>
+                      <span id="sale-total-amount">0.00</span>
+                    </div>
+                  </div>
+                  <div class="invoice-action-buttons">
+                    <button type="button" class="btn-inv-checkout" id="btn-submit-sale"><i class="fas fa-check"></i> تسجيل فاتورة البيع</button>
+                    <button type="button" class="btn-inv-clear" id="btn-clear-sale-cart"><i class="fas fa-trash"></i> مسح السلة</button>
+                  </div>
+                  <p id="sale-submit-msg" class="form-message mt-2 mb-0"></p>
+                </div>
+              </div>
+              <div class="warehouses-card card-table invoice-history-card">
+                <h5 class="card-form-title"><i class="fas fa-history me-2"></i>تسجيل فواتير البيع</h5>
+                <div class="table-responsive">
+                  <table class="table table-warehouses">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>المخزن</th>
+                        <th>المورد</th>
+                        <th>المبلغ المطلوب</th>
+                        <th>المدفوع</th>
+                        <th>التاريخ</th>
+                        <th>طباعة</th>
+                      </tr>
+                    </thead>
+                    <tbody id="sale-list-tbody">
+                      <tr><td colspan="7" class="text-center text-muted">جاري التحميل...</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- تاب سجل الشراء والبيع -->
+          <div class="tab-pane fade" id="panel-log" role="tabpanel">
+            <div class="warehouses-card card-form mb-3">
+              <h5 class="card-form-title"><i class="fas fa-filter me-2"></i>فلتر بالمورد</h5>
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <label for="log-supplier-filter" class="form-label mb-0">المورد:</label>
+                <select class="form-select form-control input-warehouse-select" id="log-supplier-filter" style="max-width: 280px;">
+                  <option value="">الكل</option>
+                  <option value="none">بدون مورد</option>
+                </select>
+            <small class="text-muted log-helper-text">الكل = كل العمليات، بدون مورد = فواتير بدون اختيار مورد، أو اختر مورداً محدداً.</small>
+              </div>
+            </div>
+        <div class="warehouses-card card-form mb-3">
+          <div class="d-flex align-items-center gap-2 flex-wrap mb-3">
+            <button type="button" class="btn btn-dashboard btn-info" id="btn-log-purchase">
+              <i class="fas fa-shopping-cart me-1"></i>
+              سجل فواتير الشراء
+            </button>
+            <button type="button" class="btn btn-outline-light" id="btn-log-sale">
+              <i class="fas fa-cash-register me-1"></i>
+              سجل فواتير البيع
+            </button>
+          </div>
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <label for="log-invoice-search" class="form-label mb-0">رقم الفاتورة:</label>
+            <div class="log-search-wrap">
+              <input type="number" min="1" class="form-control log-invoice-input" id="log-invoice-search" placeholder="اكتب رقم الفاتورة ثم اضغط بحث">
+              <button type="button" class="btn btn-dashboard btn-info log-search-btn" id="btn-log-search">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+            <small class="text-muted log-helper-text">اترك الحقل فارغاً لعرض كل الفواتير.</small>
+          </div>
+        </div>
+        <div id="log-purchase-card" class="warehouses-card card-table">
+          <h5 class="card-form-title"><i class="fas fa-shopping-cart me-2"></i>سجل فواتير الشراء</h5>
+          <div class="table-responsive log-table-scroll">
+            <table class="table table-warehouses">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>المورد</th>
+                  <th>المخزن</th>
+                  <th>المبلغ المطلوب</th>
+                  <th>المدفوع</th>
+                  <th>التاريخ</th>
+                  <th>عدد التعديلات</th>
+                  <th>طباعة</th>
+                  <th>إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="log-purchase-tbody">
+                <tr><td colspan="9" class="text-center text-muted">اختر التاب أو المورد لتحميل السجل.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div id="log-sale-card" class="warehouses-card card-table d-none">
+          <h5 class="card-form-title"><i class="fas fa-cash-register me-2"></i>سجل فواتير البيع</h5>
+          <div class="table-responsive log-table-scroll">
+            <table class="table table-warehouses">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>المورد</th>
+                  <th>المخزن</th>
+                  <th>المبلغ المطلوب</th>
+                  <th>المدفوع</th>
+                  <th>التاريخ</th>
+                  <th>عدد التعديلات</th>
+                  <th>طباعة</th>
+                  <th>إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="log-sale-tbody">
+                <tr><td colspan="9" class="text-center text-muted">اختر التاب أو المورد لتحميل السجل.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+          </div>
+
+          <!-- نافذة سجل تعديلات الفاتورة (من قام ومتى) -->
+          <div class="modal fade" id="modal-invoice-edit-log" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content inv-details-modal">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="modal-edit-log-title"><i class="fas fa-history me-2"></i>سجل تعديلات الفاتورة</h5>
+                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="table-responsive">
+                    <table class="table table-sm table-warehouses">
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>من قام بالتعديل</th>
+                          <th>التاريخ والوقت</th>
+                        </tr>
+                      </thead>
+                      <tbody id="modal-edit-log-tbody"></tbody>
+                    </table>
+                  </div>
+                  <p id="modal-edit-log-empty" class="text-muted small mb-0 d-none">لا توجد تعديلات مسجلة.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- نافذة تعديل المبلغ المدفوع (خارج التابات لتعمل من سجل الشراء والبيع) -->
+          <div class="modal fade" id="modal-edit-amount-paid" tabindex="-1" aria-labelledby="modal-edit-amount-paid-label" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content inv-details-modal">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="modal-edit-amount-paid-label"><i class="fas fa-pen me-2"></i>تعديل المبلغ المدفوع</h5>
+                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                </div>
+                <div class="modal-body">
+                  <p id="edit-amount-paid-meta" class="mb-2 small"></p>
+                  <div class="mb-3">
+                    <label class="form-label">المبلغ المدفوع</label>
+                    <input type="number" class="form-control" id="edit-amount-paid-input" min="0" step="0.01" value="0">
+                  </div>
+                  <p class="small mb-0 modal-helper-white">يمكنك تعديل المبلغ المدفوع فقط من هنا. لتعديل الفاتورة كاملاً (أصناف وكميات وأسعار) استخدم زر «تعديل الفاتورة».</p>
+                  <p id="edit-amount-paid-msg" class="form-message mt-2 mb-0"></p>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                  <button type="button" class="btn btn-dashboard btn-info" id="btn-save-amount-paid">
+                    <i class="fas fa-check me-1"></i>حفظ التعديل
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- نافذة تعديل فاتورة الشراء كاملاً (رأس + أصناف) ـ تُحفظ في قاعدة البيانات -->
+          <div class="modal fade" id="modal-edit-purchase-invoice-full" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-xl">
+              <div class="modal-content inv-details-modal">
+                <div class="modal-header">
+                  <h5 class="modal-title"><i class="fas fa-file-invoice me-2"></i>تعديل فاتورة الشراء كاملاً</h5>
+                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                </div>
+                <div class="modal-body">
+                  <input type="hidden" id="full-edit-purchase-invoice-id">
+                  <p class="small modal-helper-white mb-3">يمكنك تعديل: المورد، المخزن، الكمية، والمبلغ المدفوع فقط. أسعار الشراء والبيع للعرض ولا تُغيّر. عند الحفظ يُحدَّث المخزون تلقائياً، وإذا حذفت صنفاً تُرجَع كميته للمخزن.</p>
+                  <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                      <label class="form-label">المخزن</label>
+                      <select class="form-select" id="full-edit-purchase-warehouse"></select>
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label">المورد</label>
+                      <select class="form-select" id="full-edit-purchase-supplier"></select>
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label">المبلغ المدفوع</label>
+                      <input type="number" class="form-control" id="full-edit-purchase-amount-paid" min="0" step="0.01" value="0">
+                    </div>
+                  </div>
+                  <div class="table-responsive">
+                    <table class="table table-sm table-warehouses">
+                      <thead>
+                        <tr>
+                          <th>المنتج</th>
+                          <th>الكمية</th>
+                          <th>سعر الشراء</th>
+                          <th>سعر البيع</th>
+                          <th>المجموع</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody id="full-edit-purchase-items-tbody"></tbody>
+                    </table>
+                  </div>
+                  <p id="full-edit-purchase-msg" class="form-message mt-2 mb-0"></p>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                  <button type="button" class="btn btn-dashboard btn-info" id="btn-save-purchase-invoice-full">
+                    <i class="fas fa-check me-1"></i>حفظ في قاعدة البيانات
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- نافذة تعديل فاتورة البيع كاملاً (رأس + أصناف) ـ تُحفظ في قاعدة البيانات -->
+          <div class="modal fade" id="modal-edit-sale-invoice-full" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-xl">
+              <div class="modal-content inv-details-modal">
+                <div class="modal-header">
+                  <h5 class="modal-title"><i class="fas fa-file-invoice me-2"></i>تعديل فاتورة البيع كاملاً</h5>
+                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                </div>
+                <div class="modal-body">
+                  <input type="hidden" id="full-edit-sale-invoice-id">
+                  <p class="small modal-helper-white mb-3">يمكنك تعديل: المورد، المخزن، الكمية، والمبلغ المدفوع فقط. سعر البيع للعرض ولا يُغيّر. عند الحفظ يُحدَّث المخزون تلقائياً، وإذا حذفت صنفاً تُرجَع كميته للمخزن.</p>
+                  <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                      <label class="form-label">المخزن</label>
+                      <select class="form-select" id="full-edit-sale-warehouse"></select>
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label">المورد</label>
+                      <select class="form-select" id="full-edit-sale-supplier"></select>
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label">المبلغ المدفوع</label>
+                      <input type="number" class="form-control" id="full-edit-sale-amount-paid" min="0" step="0.01" value="0">
+                    </div>
+                  </div>
+                  <div class="table-responsive">
+                    <table class="table table-sm table-warehouses">
+                      <thead>
+                        <tr>
+                          <th>المنتج</th>
+                          <th>الكمية</th>
+                          <th>سعر البيع</th>
+                          <th>المجموع</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody id="full-edit-sale-items-tbody"></tbody>
+                    </table>
+                  </div>
+                  <p id="full-edit-sale-msg" class="form-message mt-2 mb-0"></p>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                  <button type="button" class="btn btn-dashboard btn-info" id="btn-save-sale-invoice-full">
+                    <i class="fas fa-check me-1"></i>حفظ في قاعدة البيانات
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="text-center py-3 mt-5">
+      <div class="container-fluid">
+        <p class="mb-0 footer-text">
+          <i class="fas fa-copyright me-1"></i>
+          <span id="currentYear"></span> SB Smart · conver_lang
+        </p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/warehouses-sync.js"></script>
+  <script src="/js/html-includes.js"></script>
+  <script src="/js/electron-titlebar.js"></script>
+  <script src="/js/dashboard.js"></script>
+  <script src="/js/warehouses/warehouses-access.js"></script>
+  <script src="/js/warehouses/warehouses-list.js"></script>
+  <script src="/js/warehouses/warehouses-products-helpers.js"></script>
+  <script src="/js/warehouses/warehouses-products.js"></script>
+  <script src="/js/warehouses/warehouses-suppliers.js"></script>
+  <script src="/js/warehouses/warehouses-transfer.js"></script>
+  <script src="/js/warehouses/warehouses-invoices.js"></script>
+  <script src="/js/warehouses/warehouses-log.js"></script>
+</body>
+</html>

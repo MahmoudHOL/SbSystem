@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نقطة البيع | SB Smart</title>
+  <link href="/vendor/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/vendor/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/warehouses.css">
+  <link rel="stylesheet" href="/css/invoices.css">
+</head>
+<body>
+  <button class="sidebar-toggle" id="sidebarToggle" type="button" aria-label="فتح القائمة">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h5 class="mb-0">
+        <i class="fas fa-tachometer-alt me-2"></i>
+        لوحة التحكم
+      </h5>
+    </div>
+    <div class="sidebar-body">
+      <ul class="sidebar-nav">
+        <li><a href="/dashboard"><i class="fas fa-home"></i> الرئيسية</a></li>
+        <li><a href="/warehouses"><i class="fas fa-warehouse"></i> مخازن</a></li>
+        <li><a href="/settings"><i class="fas fa-cog"></i> الإعدادات</a></li>
+        <li class="mt-4"><a href="/logout" class="sidebar-logout"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="main-content" id="mainContent">
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+      <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1">
+          <span class="brand-sb">SB</span><span class="brand-smart"> Smart</span>
+        </span>
+        <div class="navbar-nav ms-auto">
+          <span class="navbar-text">
+            <i class="fas fa-user me-1"></i>
+            <span id="userDisplayName">...</span>
+          </span>
+        </div>
+      </div>
+    </nav>
+
+    <div class="dashboard-container">
+      <div class="container">
+        <h1 class="page-title mb-3">
+          <i class="fas fa-cash-register me-2"></i>
+          نقطة البيع
+        </h1>
+
+        <ul class="nav nav-tabs tabs-sb mb-4" id="posTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tab-pos-main" data-bs-toggle="tab" data-bs-target="#panel-pos-main" type="button" role="tab">
+              نقطة البيع
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-pos-sales-log" data-bs-toggle="tab" data-bs-target="#panel-pos-sales-log" type="button" role="tab">
+              سجل المبيعات
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-pos-returns" data-bs-toggle="tab" data-bs-target="#panel-pos-returns" type="button" role="tab">
+              استرجاع / تعديل
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-pos-credit" data-bs-toggle="tab" data-bs-target="#panel-pos-credit" type="button" role="tab">
+              عملاء الأجل
+            </button>
+          </li>
+        </ul>
+
+        <div class="tab-content" id="posTabsContent">
+          <div class="tab-pane fade show active" id="panel-pos-main" role="tabpanel" aria-labelledby="tab-pos-main">
+            <div class="row g-4">
+              <!-- الفورم 1: المنتجات (مقسمة حسب الحروف) -->
+              <div class="col-lg-4">
+                <div class="card card-form h-100">
+                  <div class="card-body">
+                    <h5 class="mb-3">
+                      <i class="fas fa-boxes me-2"></i>
+                      المنتجات
+                    </h5>
+
+                    <!-- بحث بالباركود / الاسم -->
+                    <div class="row g-2 mb-3">
+                      <div class="col-12 col-md-5">
+                        <input
+                          type="text"
+                          id="pos-search-barcode"
+                          class="form-control"
+                          placeholder="ابحث بالباركود..."
+                        >
+                      </div>
+                      <div class="col-12 col-md-7">
+                        <input
+                          type="text"
+                          id="pos-search-name"
+                          class="form-control"
+                          placeholder="ابحث بالاسم..."
+                        >
+                      </div>
+                    </div>
+
+                    <!-- أزرار الحروف -->
+                    <div class="mb-3">
+                      <div id="pos-alphabet-nav" class="d-flex flex-wrap gap-1"></div>
+                    </div>
+
+                    <!-- السكاشن الخاصة بكل حرف -->
+                    <div id="pos-products-sections" style="max-height: 60vh; overflow-y: auto;">
+                      <p class="text-muted text-center mb-0" id="pos-products-placeholder">
+                        جاري تحميل المنتجات...
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- الفورم 2: سلة المبيعات / العميل / الدفع -->
+              <div class="col-lg-8">
+                <div class="card card-form h-100">
+                  <div class="card-body d-flex flex-column gap-3">
+                    <h5 class="mb-2">
+                      <i class="fas fa-shopping-basket me-2"></i>
+                      سلة المبيعات
+                    </h5>
+
+                    <!-- معلومات عامة (المخزن + العميل + طريقة الدفع) -->
+                    <div class="row g-2">
+                      <div class="col-12 col-md-4">
+                        <label for="pos-payment-mode" class="form-label mb-1">نوع البيع</label>
+                        <select id="pos-payment-mode" class="form-select form-select-sm">
+                          <option value="cash">نقدي</option>
+                          <option value="credit">أجل</option>
+                        </select>
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <label for="pos-warehouse" class="form-label mb-1">المخزن *</label>
+                        <select id="pos-warehouse" class="form-select form-select-sm">
+                          <option value="">— اختر المخزن —</option>
+                        </select>
+                      </div>
+                      <div class="col-12 col-md-2">
+                        <label for="pos-payment-method" class="form-label mb-1">طريقة الدفع</label>
+                        <select id="pos-payment-method" class="form-select form-select-sm">
+                          <option value="">بدون تحديد</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="border rounded-3 p-2 bg-dark bg-opacity-25">
+                      <h6 class="mb-2">
+                        <i class="fas fa-user me-1"></i>
+                        بيانات العميل
+                      </h6>
+                      <div class="row g-2 align-items-center">
+                        <div class="col-12 col-md-6">
+                          <div class="input-group input-group-sm">
+                            <input
+                              type="text"
+                              id="pos-customer-phone"
+                              class="form-control"
+                              placeholder="رقم الهاتف (اختياري)"
+                            >
+                            <button
+                              class="btn btn-outline-secondary"
+                              type="button"
+                              id="pos-btn-find-customer"
+                            >
+                              <i class="fas fa-search"></i>
+                            </button>
+                          </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                          <input
+                            type="text"
+                            id="pos-customer-name"
+                            class="form-control form-control-sm"
+                            placeholder="اسم العميل (اختياري)"
+                          >
+                        </div>
+                      </div>
+                      <p id="pos-customer-message" class="small text-muted mb-0 mt-1"></p>
+                    </div>
+
+                    <!-- جدول السلة -->
+                    <div class="flex-grow-1" style="min-height: 180px; max-height: 40vh; overflow-y: auto;">
+                      <table class="table table-sm table-warehouses mb-0 align-middle">
+                        <thead>
+                          <tr>
+                            <th>المنتج</th>
+                            <th style="width: 80px;">الكمية</th>
+                            <th style="width: 108px;">أصلي / بعد خصم الصنف</th>
+                            <th style="width: 165px;">خصم المنتج</th>
+                            <th style="width: 95px;">المجموع</th>
+                            <th style="width: 60px;">حذف</th>
+                          </tr>
+                        </thead>
+                        <tbody id="pos-cart-body">
+                          <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                              السلة فارغة. اضغط على منتج من القائمة على اليسار للإضافة.
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+
+                    <!-- ملخص السلة والخصومات -->
+                    <div class="border-top pt-2">
+                      <div class="d-flex justify-content-between mb-1">
+                        <span class="text-white-50 small">المجموع الفرعي بعد خصم المنتجات:</span>
+                        <span>
+                          <span id="pos-subtotal">0.00</span>
+                          <span class="text-white-50 small">ج.م</span>
+                        </span>
+                      </div>
+
+                      <div
+                        class="d-flex justify-content-between align-items-center mb-2 rounded-3 px-2 py-1"
+                        style="background: rgba(255, 107, 107, 0.08); border: 1px solid rgba(255, 107, 107, 0.2);"
+                      >
+                        <span class="text-white-50 small">
+                          <i class="fas fa-percentage me-1"></i>
+                          خصم على إجمالي الفاتورة:
+                        </span>
+                        <div class="d-flex align-items-center gap-1">
+                          <select
+                            id="pos-invoice-discount-type"
+                            class="form-select form-select-sm"
+                            style="width: 70px;"
+                          >
+                            <option value="fixed">قيمة</option>
+                            <option value="percent">٪</option>
+                          </select>
+                          <input
+                            type="number"
+                            id="pos-invoice-discount-value"
+                            class="form-control form-control-sm text-center"
+                            value="0"
+                            min="0"
+                            step="0.01"
+                            style="width: 90px;"
+                          >
+                          <span
+                            id="pos-invoice-discount-unit"
+                            class="text-white-50 small"
+                          >ج.م</span>
+                        </div>
+                      </div>
+
+                      <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-white-50 small">إجمالي خصم الفاتورة:</span>
+                        <span class="text-danger fw-semibold small">
+                          <span id="pos-invoice-discount-amount">0.00</span>
+                          <span class="text-danger small">ج.م</span>
+                        </span>
+                      </div>
+
+                      <div
+                        class="d-flex justify-content-between align-items-center p-2 rounded-3"
+                        style="background: rgba(0, 255, 127, 0.12); border: 1px solid rgba(0, 255, 127, 0.3);"
+                      >
+                        <span class="fw-semibold">الإجمالي النهائي:</span>
+                        <span class="fw-bold fs-5">
+                          <span id="pos-final-total">0.00</span>
+                          <span class="text-white-50 small">ج.م</span>
+                        </span>
+                      </div>
+
+                      <div class="row g-2 mt-2" id="pos-credit-fields-wrap" style="display:none;">
+                        <div class="col-12 col-md-4">
+                          <label class="form-label mb-1">المطلوب</label>
+                          <input type="number" class="form-control form-control-sm" id="pos-required-amount" value="0.00" readonly>
+                        </div>
+                        <div class="col-12 col-md-4">
+                          <label class="form-label mb-1">المدفوع</label>
+                          <input type="number" class="form-control form-control-sm" id="pos-amount-paid" min="0" step="0.01" value="0.00">
+                        </div>
+                        <div class="col-12 col-md-4">
+                          <label class="form-label mb-1">المتبقي</label>
+                          <input type="number" class="form-control form-control-sm" id="pos-remaining-amount" value="0.00" readonly>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- الأزرار -->
+                    <div class="d-flex gap-2 justify-content-between">
+                      <button
+                        type="button"
+                        class="btn btn-dashboard flex-grow-1"
+                        id="pos-btn-checkout"
+                      >
+                        <i class="fas fa-check me-1"></i>
+                        إتمام البيع
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-outline-light"
+                        id="pos-btn-clear"
+                      >
+                        <i class="fas fa-trash me-1"></i>
+                        مسح السلة
+                      </button>
+                    </div>
+
+                    <p id="pos-submit-message" class="form-message mt-1 mb-0"></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div> <!-- end of panel-pos-main -->
+
+          <div class="tab-pane fade" id="panel-pos-sales-log" role="tabpanel" aria-labelledby="tab-pos-sales-log">
+            <div class="warehouses-card card-table">
+              <h5 class="card-form-title">
+                <i class="fas fa-history me-2"></i>
+                سجل المبيعات
+              </h5>
+              <div class="table-responsive">
+                <table class="table table-warehouses mb-0">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>التاريخ</th>
+                      <th>المخزن</th>
+                      <th>العميل</th>
+                      <th>طريقة الدفع</th>
+                      <th>قبل الخصم</th>
+                      <th>الخصم</th>
+                      <th>بعد الخصم</th>
+                      <th>عدد القطع</th>
+                      <th>المستخدم</th>
+                      <th>تفاصيل</th>
+                    </tr>
+                  </thead>
+                  <tbody id="pos-sales-log-tbody">
+                    <tr>
+                      <td colspan="11" class="text-center text-muted">جاري التحميل عند فتح التبويب...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-pane fade" id="panel-pos-returns" role="tabpanel" aria-labelledby="tab-pos-returns">
+            <div class="warehouses-card card-table">
+              <h5 class="card-form-title">
+                <i class="fas fa-undo-alt me-2"></i>
+                استرجاع / تعديل فواتير نقطة البيع
+              </h5>
+              <div class="table-responsive">
+                <table class="table table-warehouses mb-0">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>التاريخ</th>
+                      <th>المخزن</th>
+                      <th>العميل</th>
+                      <th>بعد الخصم</th>
+                      <th>عدد القطع</th>
+                      <th>عدد التعديلات</th>
+                      <th>تعديل الفاتورة</th>
+                    </tr>
+                  </thead>
+                  <tbody id="pos-returns-tbody">
+                    <tr>
+                      <td colspan="8" class="text-center text-muted">جاري التحميل عند فتح التبويب...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-pane fade" id="panel-pos-credit" role="tabpanel" aria-labelledby="tab-pos-credit">
+            <div class="warehouses-card card-table mb-4">
+              <h5 class="card-form-title">
+                <i class="fas fa-user-clock me-2"></i>
+                ملف عملاء الأجل
+              </h5>
+              <div class="table-responsive">
+                <table class="table table-warehouses mb-0">
+                  <thead>
+                    <tr>
+                      <th>العميل</th>
+                      <th>الهاتف</th>
+                      <th>عدد فواتير الأجل</th>
+                      <th>إجمالي المطلوب</th>
+                      <th>المدفوع وقت الفواتير</th>
+                      <th>المسدد</th>
+                      <th>المتبقي</th>
+                      <th>إجراء</th>
+                    </tr>
+                  </thead>
+                  <tbody id="pos-credit-customers-tbody">
+                    <tr><td colspan="8" class="text-center text-muted">جاري التحميل عند فتح التبويب...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="warehouses-card card-table mb-4 d-none" id="pos-credit-invoices-wrap">
+              <h5 class="card-form-title">
+                <i class="fas fa-file-invoice-dollar me-2"></i>
+                فواتير الأجل للعميل
+              </h5>
+              <p class="small text-muted mb-2" id="pos-credit-customer-title">—</p>
+              <div class="table-responsive">
+                <table class="table table-warehouses mb-0">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>رقم الفاتورة</th>
+                      <th>تاريخ الفاتورة</th>
+                      <th>المطلوب</th>
+                      <th>المدفوع</th>
+                      <th>المسدد</th>
+                      <th>المتبقي</th>
+                      <th>الحالة</th>
+                      <th>تفاصيل</th>
+                      <th>سداد من الفاتورة</th>
+                    </tr>
+                  </thead>
+                  <tbody id="pos-credit-invoices-tbody">
+                    <tr><td colspan="10" class="text-center text-muted">—</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <p id="pos-credit-msg" class="form-message mt-2 mb-0"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="text-center py-3 mt-5">
+      <div class="container-fluid">
+        <p class="mb-0 footer-text">
+          <i class="fas ©opyright me-1"></i>
+          <span id="currentYear"></span> SB Smart · conver_lang
+        </p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- مودال تفاصيل فاتورة البيع في نقطة البيع -->
+  <div class="modal fade" id="pos-sale-details-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content inv-details-modal">
+        <div class="modal-header">
+          <h5 class="modal-title" id="pos-sale-details-title">تفاصيل الفاتورة</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+        </div>
+        <div class="modal-body">
+          <p id="pos-sale-details-meta" class="mb-2 small text-white-50"></p>
+          <div class="table-responsive">
+            <table class="table table-warehouses inv-details-table mb-2">
+              <thead>
+                <tr>
+                  <th>المنتج</th>
+                  <th>الباركود</th>
+                  <th>الكمية (قابلة للتعديل)</th>
+                  <th>سعر البيع</th>
+                  <th>المجموع</th>
+                </tr>
+              </thead>
+              <tbody id="pos-sale-details-tbody">
+                <tr>
+                  <td colspan="5" class="text-center text-muted">جاري التحميل...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p id="pos-sale-details-summary" class="small text-white mb-0"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-light btn-sm" data-bs-dismiss="modal">إغلاق</button>
+          <button type="button" class="btn btn-dashboard btn-info btn-sm" id="pos-sale-edit-save">
+            <i class="fas fa-save me-1"></i>حفظ التعديل
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/warehouses-sync.js"></script>
+  <script src="/js/dashboard.js"></script>
+  <script src="/js/pos/core.js"></script>
+  <script src="/js/pos/cart.js"></script>
+  <script src="/js/pos/access.js"></script>
+  <script src="/js/pos/sales-log.js"></script>
+  <script src="/js/pos/returns.js"></script>
+  <script src="/js/pos/credit.js"></script>
+</body>
+</html>
+

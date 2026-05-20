@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>المستخدمون | SB Smart</title>
+  <link href="/vendor/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/vendor/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/settings.css">
+  <link rel="stylesheet" href="/css/electron-titlebar.css">
+</head>
+<body>
+  <button class="sidebar-toggle" id="sidebarToggle" type="button" aria-label="فتح القائمة">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h5 class="mb-0">
+        <i class="fas fa-tachometer-alt me-2"></i>
+        لوحة التحكم
+      </h5>
+    </div>
+    <div class="sidebar-body">
+      <ul class="sidebar-nav">
+        <li>
+          <a href="/dashboard">
+            <i class="fas fa-home"></i>
+            الرئيسية
+          </a>
+        </li>
+        <li>
+          <a href="/warehouses">
+            <i class="fas fa-warehouse"></i>
+            مخازن
+          </a>
+        </li>
+        <li>
+          <a href="/settings" class="active">
+            <i class="fas fa-cog"></i>
+            الإعدادات
+          </a>
+        </li>
+        <li class="mt-4">
+          <a href="/logout" class="sidebar-logout">
+            <i class="fas fa-sign-out-alt"></i>
+            تسجيل الخروج
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="main-content" id="mainContent">
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+      <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1">
+          <span class="brand-sb">SB</span><span class="brand-smart"> Smart</span>
+        </span>
+        <div class="navbar-nav ms-auto">
+          <span class="navbar-text">
+            <i class="fas fa-user me-1"></i>
+            <span id="userDisplayName">...</span>
+          </span>
+        </div>
+      </div>
+    </nav>
+
+    <div class="dashboard-container">
+      <div class="container">
+        <h2 class="settings-page-title">
+          <a href="/settings" class="text-decoration-none text-muted me-2"><i class="fas fa-arrow-right"></i></a>
+          <i class="fas fa-users me-2"></i>
+          المستخدمون
+        </h2>
+
+        <div class="settings-card">
+          <div class="settings-card-header">
+            <i class="fas fa-users"></i>
+            إدارة المستخدمين
+          </div>
+          <div class="settings-card-body">
+            <div class="row mb-4">
+              <div class="col-lg-6">
+                <h6 class="text-muted mb-3">إنشاء مستخدم جديد</h6>
+                <form id="formCreateUser" class="row g-2">
+                  <div class="col-12 col-sm-6">
+                    <input type="text" class="form-control" name="username" placeholder="اسم المستخدم" required minlength="2">
+                  </div>
+                  <div class="col-12 col-sm-6">
+                    <input type="password" class="form-control" name="password" placeholder="كلمة المرور" required minlength="4">
+                  </div>
+                  <div class="col-12 col-sm-6">
+                    <input type="text" class="form-control" name="full_name" placeholder="الاسم الكامل (اختياري)">
+                  </div>
+                  <div class="col-12">
+                    <button type="submit" class="btn btn-gold btn-sm">
+                      <i class="fas fa-plus me-1"></i>
+                      إنشاء مستخدم
+                    </button>
+                    <span id="createUserMessage" class="ms-2 small"></span>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <h6 class="text-muted mb-2">قائمة المستخدمين</h6>
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead>
+                  <tr>
+                    <th>اسم المستخدم</th>
+                    <th>الاسم الكامل</th>
+                    <th>الحالة</th>
+                    <th>تاريخ الإنشاء</th>
+                    <th>إجراءات</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                  <tr>
+                    <td colspan="5" class="text-center text-muted py-4">جاري التحميل...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="text-center py-3 mt-5">
+      <div class="container-fluid">
+        <p class="mb-0 footer-text">
+          <i class="fas fa-copyright me-1"></i>
+          <span id="currentYear"></span> SB Smart · conver_lang
+        </p>
+      </div>
+    </footer>
+  </div>
+
+  <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content settings-modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editUserModalLabel">
+            <i class="fas fa-user-edit me-2"></i>
+            تعديل بيانات المستخدم
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+        </div>
+        <form id="formEditUser">
+          <div class="modal-body">
+            <input type="hidden" id="editUserId">
+            <div class="mb-3">
+              <label for="editUsername" class="form-label">اسم المستخدم</label>
+              <input type="text" class="form-control" id="editUsername" required minlength="2">
+              <div id="editUsernameHelp" class="form-text text-muted d-none">لا يمكن تغيير اسم المستخدم admin</div>
+            </div>
+            <div class="mb-3">
+              <label for="editFullName" class="form-label">الاسم الكامل (اختياري)</label>
+              <input type="text" class="form-control" id="editFullName">
+            </div>
+            <div class="mb-3">
+              <label for="editPassword" class="form-label">كلمة المرور الجديدة (اختياري)</label>
+              <input type="password" class="form-control" id="editPassword" minlength="4" placeholder="اتركها فارغة بدون تغيير">
+            </div>
+            <div class="mb-1">
+              <label for="editIsActive" class="form-label">الحالة</label>
+              <select class="form-select" id="editIsActive">
+                <option value="1">نشط</option>
+                <option value="0">معطّل</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">إلغاء</button>
+            <button type="submit" class="btn btn-gold btn-sm" id="btnSaveUserEdit">
+              <i class="fas fa-save me-1"></i>
+              حفظ التعديلات
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/electron-titlebar.js"></script>
+  <script src="/js/dashboard.js"></script>
+  <script src="/js/settings.js"></script>
+</body>
+</html>

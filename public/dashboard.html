@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة التحكم | SB Smart</title>
+  <link href="/vendor/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/vendor/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/electron-titlebar.css">
+</head>
+<body>
+  <!-- زر فتح القائمة -->
+  <button class="sidebar-toggle" id="sidebarToggle" type="button" aria-label="فتح القائمة">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <!-- الشريط الجانبي -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h5 class="mb-0">
+        <i class="fas fa-tachometer-alt me-2"></i>
+        لوحة التحكم
+      </h5>
+    </div>
+    <div class="sidebar-body">
+      <ul class="sidebar-nav">
+        <li>
+          <a href="/dashboard" class="active">
+            <i class="fas fa-home"></i>
+            الرئيسية
+          </a>
+        </li>
+        <li>
+          <a href="/warehouses">
+            <i class="fas fa-warehouse"></i>
+            مخازن
+          </a>
+        </li>
+        <li>
+          <a href="/expenses">
+            <i class="fas fa-money-bill-wave"></i>
+            المصروفات
+          </a>
+        </li>
+        <li>
+          <a href="/settings">
+            <i class="fas fa-cog"></i>
+            الإعدادات
+          </a>
+        </li>
+        <li class="mt-4">
+          <a href="/logout" class="sidebar-logout">
+            <i class="fas fa-sign-out-alt"></i>
+            تسجيل الخروج
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- المحتوى الرئيسي -->
+  <div class="main-content" id="mainContent">
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+      <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1">
+          <span class="brand-sb">SB</span><span class="brand-smart"> Smart</span>
+        </span>
+        <div class="navbar-nav ms-auto">
+          <button
+            type="button"
+            class="btn btn-outline-secondary position-relative me-3"
+            id="btnStockNotifications"
+            data-bs-toggle="modal"
+            data-bs-target="#stockNotificationsModal"
+            title="إشعارات المخزون"
+            aria-label="إشعارات المخزون"
+          >
+            <i class="fas fa-bell"></i>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" id="stockNotificationsBadge">0</span>
+          </button>
+          <span class="navbar-text" id="navbarUser">
+            <i class="fas fa-user me-1"></i>
+            <span id="userDisplayName">...</span>
+          </span>
+        </div>
+      </div>
+    </nav>
+
+    <div class="dashboard-container">
+      <div class="container">
+        <!-- بطاقة الترحيب -->
+        <div class="welcome-card">
+          <div class="welcome-header">
+            <div class="row align-items-center">
+              <div class="col-md-8">
+                <h1 class="mb-3">
+                  <i class="fas fa-hand-wave me-3"></i>
+                  مرحباً بك في النظام!
+                </h1>
+              </div>
+              <div class="col-md-4 text-end">
+                <i class="fas fa-rocket fa-4x opacity-75"></i>
+              </div>
+            </div>
+          </div>
+          <div class="welcome-body">
+            <p class="text-muted mb-0">من نقطة البداية إلى نقطة النهاية · SB POS</p>
+          </div>
+        </div>
+
+        <!-- البطاقات -->
+        <div class="row">
+          <div class="col-md-4 col-lg-3 mb-4">
+            <div class="feature-card">
+              <div class="feature-icon info">
+                <i class="fas fa-warehouse"></i>
+              </div>
+              <h4>مخازن</h4>
+              <p class="text-muted">إدارة المخازن والمخزون</p>
+              <a href="/warehouses" class="btn btn-dashboard btn-info">
+                <i class="fas fa-arrow-left me-2"></i>
+                المخازن
+              </a>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3 mb-4">
+            <div class="feature-card">
+              <div class="feature-icon info">
+                <i class="fas fa-cash-register"></i>
+              </div>
+              <h4>نقطة البيع</h4>
+              <p class="text-muted">فاتورة بيع سريعة بدون مورد</p>
+              <a href="/pos" class="btn btn-dashboard btn-info">
+                <i class="fas fa-arrow-left me-2"></i>
+                نقطة البيع
+              </a>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3 mb-4">
+            <div class="feature-card">
+              <div class="feature-icon info">
+                <i class="fas fa-money-bill-wave"></i>
+              </div>
+              <h4>المصروفات</h4>
+              <p class="text-muted">تسجيل المصروفات والفئات وطرق الدفع</p>
+              <a href="/expenses" class="btn btn-dashboard btn-info">
+                <i class="fas fa-arrow-left me-2"></i>
+                المصروفات
+              </a>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3 mb-4">
+            <div class="feature-card">
+              <div class="feature-icon info">
+                <i class="fas fa-user-clock"></i>
+              </div>
+              <h4>عملاء الأجل</h4>
+              <p class="text-muted">
+                عملاء عليهم أجل:
+                <strong id="dashboard-credit-customers-count">...</strong>
+                <br>
+                إجمالي المتبقي:
+                <strong id="dashboard-credit-total-remaining">...</strong>
+              </p>
+              <a href="/credit-customers" class="btn btn-dashboard btn-info">
+                <i class="fas fa-arrow-left me-2"></i>
+                ملف الأجل
+              </a>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3 mb-4">
+            <div class="feature-card">
+              <div class="feature-icon info">
+                <i class="fas fa-lock"></i>
+              </div>
+              <h4>تقفيل خزن</h4>
+              <p class="text-muted">ملخص شفت نقطة البيع حسب طرق الدفع</p>
+              <a href="/shift-close" class="btn btn-dashboard btn-info">
+                <i class="fas fa-arrow-left me-2"></i>
+                فتح صفحة التقفيل
+              </a>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3 mb-4">
+            <div class="feature-card">
+              <div class="feature-icon info">
+                <i class="fas fa-university"></i>
+              </div>
+              <h4>حسابات بنكية</h4>
+              <p class="text-muted">متابعة الحسابات البنكية والأرصدة</p>
+              <button type="button" class="btn btn-dashboard btn-secondary" disabled aria-disabled="true">قريباً</button>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3 mb-4">
+            <div class="feature-card">
+              <div class="feature-icon info">
+                <i class="fas fa-coins"></i>
+              </div>
+              <h4>أصول متداولة</h4>
+              <p class="text-muted">ملخص الأصول السريعة التحوّل</p>
+              <button type="button" class="btn btn-dashboard btn-secondary" disabled aria-disabled="true">قريباً</button>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3 mb-4">
+            <div class="feature-card">
+              <div class="feature-icon info">
+                <i class="fas fa-chart-line"></i>
+              </div>
+              <h4>تقرير</h4>
+              <p class="text-muted">صفحة مستقلة للتقرير</p>
+              <a href="/reports/pos-profit" class="btn btn-dashboard btn-info">
+                <i class="fas fa-arrow-left me-2"></i>
+                فتح التقرير
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="text-center py-3 mt-5">
+      <div class="container-fluid">
+        <p class="mb-0 footer-text">
+          <i class="fas fa-copyright me-1"></i>
+          <span id="currentYear"></span> SB Smart · conver_lang
+        </p>
+      </div>
+    </footer>
+  </div>
+
+  <div class="modal fade" id="stockNotificationsModal" tabindex="-1" aria-labelledby="stockNotificationsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content inv-details-modal">
+        <div class="modal-header">
+          <h5 class="modal-title" id="stockNotificationsModalLabel">
+            <i class="fas fa-bell me-2"></i>
+            إشعارات المخزون
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+        </div>
+        <div class="modal-body">
+          <div class="d-flex flex-wrap gap-2 mb-3">
+            <span class="badge bg-danger" id="countOutOfStock">منتهي: 0</span>
+            <span class="badge bg-warning text-dark" id="countLowStock">أوشك على الانتهاء: 0</span>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-sm table-warehouses mb-0">
+              <thead>
+                <tr>
+                  <th>الحالة</th>
+                  <th>المنتج</th>
+                  <th>الباركود</th>
+                  <th>المخزن</th>
+                  <th>الكمية</th>
+                </tr>
+              </thead>
+              <tbody id="stockNotificationsTbody">
+                <tr><td colspan="5" class="text-center text-muted">جاري التحميل...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/electron-titlebar.js"></script>
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>

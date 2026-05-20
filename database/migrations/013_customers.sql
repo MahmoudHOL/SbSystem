@@ -1,0 +1,10 @@
+-- جدول العملاء | Customers
+CREATE TABLE IF NOT EXISTS customers (
+  id         INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  name       VARCHAR(200) NOT NULL COMMENT 'اسم العميل',
+  phone      VARCHAR(50) NOT NULL COMMENT 'رقم الهاتف',
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_customers_name (name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

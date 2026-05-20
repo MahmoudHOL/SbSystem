@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إعدادات النظام | SB Smart</title>
+  <link href="/vendor/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/vendor/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/warehouses.css">
+  <link rel="stylesheet" href="/css/settings.css">
+  <link rel="stylesheet" href="/css/electron-titlebar.css">
+</head>
+<body>
+  <button class="sidebar-toggle" id="sidebarToggle" type="button" aria-label="فتح القائمة">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h5 class="mb-0">
+        <i class="fas fa-tachometer-alt me-2"></i>
+        لوحة التحكم
+      </h5>
+    </div>
+    <div class="sidebar-body">
+      <ul class="sidebar-nav">
+        <li><a href="/dashboard"><i class="fas fa-home"></i> الرئيسية</a></li>
+        <li><a href="/warehouses"><i class="fas fa-warehouse"></i> مخازن</a></li>
+        <li><a href="/settings" class="active"><i class="fas fa-cog"></i> الإعدادات</a></li>
+        <li class="mt-4"><a href="/logout" class="sidebar-logout"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="main-content" id="mainContent">
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+      <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1">
+          <span class="brand-sb">SB</span><span class="brand-smart"> Smart</span>
+        </span>
+        <div class="navbar-nav ms-auto">
+          <span class="navbar-text">
+            <i class="fas fa-user me-1"></i>
+            <span id="userDisplayName">...</span>
+          </span>
+        </div>
+      </div>
+    </nav>
+
+    <div class="dashboard-container">
+      <div class="container">
+        <h1 class="page-title mb-4">
+          <a href="/settings" class="text-decoration-none text-muted me-2"><i class="fas fa-arrow-right"></i></a>
+          <i class="fas fa-sliders-h me-2"></i>
+          إعدادات النظام
+        </h1>
+
+        <ul class="nav nav-tabs tabs-sb mb-4" id="systemTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tab-payment-methods" data-bs-toggle="tab" data-bs-target="#panel-payment-methods" type="button" role="tab">طرق الدفع</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-discounts" data-bs-toggle="tab" data-bs-target="#panel-discounts" type="button" role="tab">نسب الخصم</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-user-warehouses" data-bs-toggle="tab" data-bs-target="#panel-user-warehouses" type="button" role="tab">تحديد مخزن لي المستخدم</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-expense-categories" data-bs-toggle="tab" data-bs-target="#panel-expense-categories" type="button" role="tab">فئات المصروفات</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-company-profile" data-bs-toggle="tab" data-bs-target="#panel-company-profile" type="button" role="tab">بيانات المنشأة</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-backup-paths" data-bs-toggle="tab" data-bs-target="#panel-backup-paths" type="button" role="tab">نسخ احتياطي / استيراد البيانات</button>
+          </li>
+        </ul>
+
+        <div class="tab-content" id="systemTabContent">
+          <div class="tab-pane fade show active" id="panel-payment-methods" role="tabpanel">
+            <div class="row g-4">
+              <div class="col-lg-5">
+                <div class="warehouses-card card-form">
+                  <h5 class="card-form-title">
+                    <i class="fas fa-plus-circle me-2"></i>
+                    إنشاء طرق دفع
+                  </h5>
+                  <form id="add-payment-method-form" class="row g-3 align-items-end">
+                    <div class="col-12">
+                      <label for="payment-method-name" class="form-label">اسم طريقة الدفع</label>
+                      <input type="text" class="form-control" id="payment-method-name" name="name" placeholder="مثال: نقدي، بطاقة، آجل" required>
+                    </div>
+                    <div class="col-12">
+                      <button type="submit" class="btn btn-dashboard btn-info" id="btn-add-payment-method">
+                        <i class="fas fa-plus me-2"></i>
+                        إضافة
+                      </button>
+                    </div>
+                  </form>
+                  <p id="payment-method-message" class="form-message mt-2 mb-0 d-none"></p>
+                </div>
+              </div>
+              <div class="col-lg-7">
+                <div class="settings-card">
+                  <div class="settings-card-header">
+                    <i class="fas fa-list"></i>
+                    طرق الدفع المضافة
+                  </div>
+                  <div class="settings-card-body">
+                    <div class="table-responsive">
+                      <table class="table table-hover mb-0 settings-table">
+                        <thead>
+                          <tr>
+                            <th>#</th>
+                            <th>اسم طريقة الدفع</th>
+                            <th>تاريخ الإضافة</th>
+                            <th>افتراضي لنقطة البيع</th>
+                          </tr>
+                        </thead>
+                        <tbody id="payment-methods-tbody">
+                          <tr>
+                            <td colspan="4" class="text-center text-muted py-4">جاري التحميل...</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-pane fade" id="panel-discounts" role="tabpanel">
+            <div class="row g-4">
+              <div class="col-lg-4">
+                <div class="settings-card">
+                  <div class="settings-card-header">
+                    <i class="fas fa-percent"></i>
+                    الخصم العام
+                  </div>
+                  <div class="settings-card-body">
+                    <form id="global-discount-form" class="row g-3 align-items-end">
+                      <div class="col-12">
+                        <label for="global-discount" class="form-label">نسبة الخصم العام (%)</label>
+                        <div class="input-group input-group-sm">
+                          <input type="number" class="form-control" id="global-discount" name="percent" min="0" max="100" step="0.01" placeholder="مثال: 5 أو 10">
+                          <span class="input-group-text">%</span>
+                        </div>
+                        <small class="text-muted">يُستخدم هذا الخصم لكل من لا يملك خصماً خاصاً.</small>
+                      </div>
+                      <div class="col-12">
+                        <button type="submit" class="btn btn-dashboard btn-info btn-sm" id="btn-save-global-discount">
+                          <i class="fas fa-save me-1"></i>
+                          حفظ الخصم العام
+                        </button>
+                      </div>
+                    </form>
+                    <p id="global-discount-message" class="form-message mt-2 mb-0 d-none"></p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-8">
+                <div class="settings-card">
+                  <div class="settings-card-header">
+                    <i class="fas fa-users-cog"></i>
+                    نسب الخصم لكل مستخدم
+                  </div>
+                  <div class="settings-card-body">
+                    <div class="table-responsive">
+                      <table class="table table-hover mb-0 settings-table">
+                        <thead>
+                          <tr>
+                            <th>المستخدم</th>
+                            <th>الاسم الكامل</th>
+                            <th>الخصم الحالي</th>
+                            <th style="width: 220px;">تعديل الخصم (%)</th>
+                          </tr>
+                        </thead>
+                        <tbody id="discount-users-tbody">
+                          <tr>
+                            <td colspan="4" class="text-center text-muted py-4">جاري التحميل...</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <small class="text-muted d-block mt-2">
+                      إذا تركت خانة الخصم فارغة، سيتم استخدام الخصم العام لهذا المستخدم.
+                    </small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-pane fade" id="panel-user-warehouses" role="tabpanel">
+            <div class="settings-card">
+              <div class="settings-card-header">
+                <i class="fas fa-warehouse"></i>
+                تحديد مخزن لي المستخدم
+              </div>
+              <div class="settings-card-body">
+                <p class="text-muted small mb-3">اربط كل مستخدم بالمخازن التي يمكنه استخدامها. المستخدم يمكنه أن يكون مرتبطاً بأكثر من مخزن.</p>
+                <div class="table-responsive">
+                  <table class="table table-hover mb-0 settings-table">
+                    <thead>
+                      <tr>
+                        <th>المستخدم</th>
+                        <th>الاسم الكامل</th>
+                        <th>المخازن المرتبطة</th>
+                        <th style="width: 280px;">إضافة مخزن</th>
+                      </tr>
+                    </thead>
+                    <tbody id="user-warehouses-tbody">
+                      <tr>
+                        <td colspan="4" class="text-center text-muted py-4">جاري التحميل...</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p id="user-warehouses-message" class="form-message mt-2 mb-0 d-none"></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-pane fade" id="panel-expense-categories" role="tabpanel">
+            <div class="row g-4">
+              <div class="col-lg-5">
+                <div class="warehouses-card card-form">
+                  <h5 class="card-form-title">
+                    <i class="fas fa-plus-circle me-2"></i>
+                    إضافة فئة مصروفات
+                  </h5>
+                  <form id="add-expense-category-form" class="row g-3 align-items-end">
+                    <div class="col-12">
+                      <label for="expense-category-name" class="form-label">اسم الفئة</label>
+                      <input type="text" class="form-control" id="expense-category-name" name="name" placeholder="مثال: كهرباء، إيجار، صيانة" required>
+                    </div>
+                    <div class="col-12">
+                      <button type="submit" class="btn btn-dashboard btn-info" id="btn-add-expense-category">
+                        <i class="fas fa-plus me-2"></i>
+                        إضافة
+                      </button>
+                    </div>
+                  </form>
+                  <p id="expense-category-message" class="form-message mt-2 mb-0 d-none"></p>
+                </div>
+              </div>
+              <div class="col-lg-7">
+                <div class="settings-card">
+                  <div class="settings-card-header">
+                    <i class="fas fa-list"></i>
+                    فئات المصروفات المضافة
+                  </div>
+                  <div class="settings-card-body">
+                    <div class="table-responsive">
+                      <table class="table table-hover mb-0 settings-table">
+                        <thead>
+                          <tr>
+                            <th>#</th>
+                            <th>اسم الفئة</th>
+                            <th>تاريخ الإضافة</th>
+                          </tr>
+                        </thead>
+                        <tbody id="expense-categories-tbody">
+                          <tr>
+                            <td colspan="3" class="text-center text-muted py-4">جاري التحميل...</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-pane fade" id="panel-company-profile" role="tabpanel">
+            <div class="row g-4">
+              <div class="col-lg-6">
+                <div class="settings-card">
+                  <div class="settings-card-header">
+                    <i class="fas fa-building"></i>
+                    بيانات المنشأة
+                  </div>
+                  <div class="settings-card-body">
+                    <form id="company-profile-form" class="row g-3" enctype="multipart/form-data">
+                      <div class="col-12">
+                        <label for="company-name" class="form-label">اسم المنشأة</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="company-name"
+                          name="company_name"
+                          placeholder="اكتب اسم المنشأة هنا"
+                          required
+                        >
+                      </div>
+                      <div class="col-12">
+                        <label for="company-logo" class="form-label">شعار المنشأة (اختياري)</label>
+                        <input
+                          type="file"
+                          class="form-control"
+                          id="company-logo"
+                          name="company_logo"
+                          accept="image/*"
+                        >
+                        <small class="text-muted d-block mt-1">الحد الأقصى للحجم 5 ميجابايت، ويفضّل صورة مربعة.</small>
+                      </div>
+                      <div class="col-12 d-flex align-items-center gap-3">
+                        <div class="company-logo-preview-wrapper">
+                          <img id="company-logo-preview" src="" alt="شعار المنشأة" class="company-logo-preview d-none">
+                        </div>
+                        <small class="text-muted">سيظهر الشعار هنا عند تحميله أو حفظه.</small>
+                      </div>
+                      <div class="col-12">
+                        <button type="submit" class="btn btn-dashboard btn-info" id="btn-save-company-profile">
+                          <i class="fas fa-save me-1"></i>
+                          حفظ بيانات المنشأة
+                        </button>
+                      </div>
+                    </form>
+                    <p id="company-profile-message" class="form-message mt-2 mb-0 d-none"></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-pane fade" id="panel-backup-paths" role="tabpanel">
+            <div class="row g-4">
+              <div class="col-lg-5">
+                <div class="warehouses-card card-form">
+                  <h5 class="card-form-title">
+                    <i class="fas fa-folder-plus me-2"></i>
+                    نسخ احتياطي / استيراد البيانات
+                  </h5>
+                  <button type="button" class="btn btn-dashboard btn-info mb-3" id="btn-show-add-backup-path">
+                    <i class="fas fa-plus me-2"></i>
+                    إضافة
+                  </button>
+
+                  <form id="add-backup-path-form" class="row g-3 align-items-end d-none">
+                    <div class="col-12">
+                      <label for="backup-path-input" class="form-label">تحديد مسار</label>
+                      <input type="text" class="form-control" id="backup-path-input" name="backup_path" placeholder="اكتب مسار النسخ الاحتياطي مباشرة" required>
+                    </div>
+                    <div class="col-12">
+                      <button type="submit" class="btn btn-dashboard btn-info" id="btn-save-backup-path">
+                        <i class="fas fa-save me-2"></i>
+                        حفظ المسار
+                      </button>
+                    </div>
+                  </form>
+                  <p id="backup-path-message" class="form-message mt-2 mb-0 d-none"></p>
+                </div>
+
+                <div class="settings-card mt-3">
+                  <div class="settings-card-header">
+                    <i class="fas fa-clock"></i>
+                    وقت النسخ الاحتياطي اليومي
+                  </div>
+                  <div class="settings-card-body">
+                    <form id="backup-time-form" class="row g-3 align-items-end">
+                      <div class="col-12">
+                        <label for="backup-time-input" class="form-label">حدد الوقت اليومي</label>
+                        <input type="time" class="form-control" id="backup-time-input" value="00:00">
+                        <small class="text-muted d-block mt-1">إذا لم يتم تحديد وقت، الافتراضي هو 12:00 بعد منتصف الليل.</small>
+                      </div>
+                      <div class="col-12">
+                        <button type="submit" class="btn btn-dashboard btn-info" id="btn-save-backup-time">
+                          <i class="fas fa-save me-1"></i>
+                          حفظ الوقت
+                        </button>
+                        <button type="button" class="btn btn-outline-primary ms-2" id="btn-run-backup-now">
+                          <i class="fas fa-play me-1"></i>
+                          تنفيذ Backup الآن
+                        </button>
+                      </div>
+                    </form>
+                    <p id="backup-time-message" class="form-message mt-2 mb-0 d-none"></p>
+                  </div>
+                </div>
+
+                <div class="settings-card mt-3">
+                  <div class="settings-card-header">
+                    <i class="fas fa-file-import"></i>
+                    استيراد البيانات
+                  </div>
+                  <div class="settings-card-body">
+                    <form id="backup-import-form" class="row g-3 align-items-end" enctype="multipart/form-data">
+                      <div class="col-12">
+                        <label for="backup-import-file" class="form-label">ملف النسخة الاحتياطية (.sql)</label>
+                        <input type="file" class="form-control" id="backup-import-file" name="backup_file" accept=".sql" required>
+                        <small class="text-muted d-block mt-1">سيتم استيراد الملف مباشرة إلى قاعدة البيانات الحالية.</small>
+                      </div>
+                      <div class="col-12">
+                        <button type="submit" class="btn btn-warning" id="btn-run-backup-import">
+                          <i class="fas fa-upload me-1"></i>
+                          استيراد الآن
+                        </button>
+                      </div>
+                    </form>
+                    <p id="backup-import-message" class="form-message mt-2 mb-0 d-none"></p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-7">
+                <div class="settings-card">
+                  <div class="settings-card-header">
+                    <i class="fas fa-database"></i>
+                    المسارات المحفوظة
+                  </div>
+                  <div class="settings-card-body">
+                    <div class="table-responsive">
+                      <table class="table table-hover mb-0 settings-table">
+                        <thead>
+                          <tr>
+                            <th>#</th>
+                            <th>المسار</th>
+                            <th>تاريخ الإضافة</th>
+                            <th style="width: 120px;">إجراءات</th>
+                          </tr>
+                        </thead>
+                        <tbody id="backup-paths-tbody">
+                          <tr>
+                            <td colspan="4" class="text-center text-muted py-4">جاري التحميل...</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="text-center py-3 mt-5">
+      <div class="container-fluid">
+        <p class="mb-0 footer-text">
+          <i class="fas fa-copyright me-1"></i>
+          <span id="currentYear"></span> SB Smart · conver_lang
+        </p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/warehouses-sync.js"></script>
+  <script src="/js/electron-titlebar.js"></script>
+  <script src="/js/dashboard.js"></script>
+  <script src="/js/system.js"></script>
+</body>
+</html>

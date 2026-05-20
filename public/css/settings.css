@@ -1,0 +1,174 @@
+/**
+ * صفحة الإعدادات - بطاقات ذهبية
+ */
+
+.settings-page-title {
+  color: #111827;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.settings-card {
+  background: #ffffff;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 20px;
+  border: 1px solid rgba(229, 231, 235, 0.9);
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  margin-bottom: 24px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  color: var(--text);
+}
+
+.settings-card:hover {
+  border-color: rgba(184, 115, 51, 0.5);
+  box-shadow: 0 12px 40px var(--glow), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.settings-card-header {
+  background: linear-gradient(135deg, rgba(248, 250, 252, 0.98), rgba(253, 244, 226, 0.96));
+  border-bottom: 1px solid rgba(229, 231, 235, 0.9);
+  padding: 18px 24px;
+  color: var(--text);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.settings-card-header i {
+  color: var(--gold);
+}
+
+.settings-card-body {
+  padding: 24px;
+}
+
+.settings-card .table {
+  color: #111827;
+}
+
+.settings-card .table thead th {
+  border-color: rgba(229, 231, 235, 0.9);
+  color: var(--copper-light);
+  font-weight: 600;
+}
+
+.settings-card .table td,
+.settings-card .table tbody th {
+  border-color: rgba(209, 213, 219, 0.9);
+  vertical-align: middle;
+}
+
+.settings-card .table tbody tr:hover {
+  background: rgba(253, 244, 226, 0.5);
+}
+
+.settings-table thead th {
+  font-weight: 600;
+  color: var(--copper-light);
+}
+
+.settings-card .form-control,
+.settings-card .form-select {
+  background: #f9fafb;
+  border: 1px solid rgba(209, 213, 219, 0.9);
+  color: #111827;
+}
+
+.settings-card .form-control:focus,
+.settings-card .form-select:focus {
+  background: #ffffff;
+  border-color: rgba(184, 115, 51, 0.8);
+  box-shadow: 0 0 0 0.2rem rgba(184, 115, 51, 0.22);
+  color: #111827;
+}
+
+.settings-card .form-control::placeholder {
+  color: var(--text-muted);
+}
+
+.settings-card .btn-gold {
+  background: linear-gradient(135deg, var(--copper), var(--copper-light));
+  border: none;
+  color: var(--bg-dark);
+  font-weight: 600;
+}
+
+.settings-card .btn-gold:hover {
+  box-shadow: 0 6px 20px var(--glow);
+  color: var(--bg-dark);
+}
+
+.settings-card .btn-outline-danger {
+  border-color: rgba(220, 53, 69, 0.6);
+  color: #e57373;
+}
+
+.settings-card .btn-outline-danger:hover {
+  background: rgba(220, 53, 69, 0.2);
+  border-color: #dc3545;
+  color: #ff8a80;
+}
+
+.badge-inactive {
+  background: rgba(108, 117, 125, 0.4);
+  color: var(--text-muted);
+}
+
+.badge-active {
+  background: rgba(184, 115, 51, 0.4);
+  color: var(--copper-light);
+}
+
+/* كروت الصلاحيات - نفس شكل كروت الأقسام مع مفتاح بدل الزر */
+.permission-feature-card .form-check-input {
+  cursor: pointer;
+  width: 3rem;
+  height: 1.5rem;
+}
+
+.permission-feature-card .form-check-input:focus {
+  box-shadow: 0 0 0 0.2rem rgba(184, 115, 51, 0.35);
+}
+
+.permission-feature-card .form-check-label {
+  cursor: pointer;
+  color: var(--text);
+  margin-right: 0.5rem;
+}
+
+.company-logo-preview-wrapper {
+  width: 80px;
+  height: 80px;
+  border-radius: 18px;
+  border: 1px solid rgba(209, 213, 219, 0.9);
+  background: #f9fafb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.company-logo-preview {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.settings-modal-content {
+  background: #ffffff;
+  border: 1px solid rgba(229, 231, 235, 0.9);
+  border-radius: 16px;
+}
+
+.settings-modal-content .modal-header,
+.settings-modal-content .modal-footer {
+  border-color: rgba(229, 231, 235, 0.9);
+}
+
+.settings-modal-content .modal-title {
+  color: #111827;
+  font-weight: 600;
+}

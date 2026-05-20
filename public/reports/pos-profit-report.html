@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تقرير المبيعات | SB Smart</title>
+  <link href="/vendor/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/vendor/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/warehouses.css">
+  <link rel="stylesheet" href="/css/electron-titlebar.css">
+  <style>
+    /* كروت متقاربة — مسافة أفقية/عمودية ضئيلة بينها */
+    .pos-report-cards-row {
+      --bs-gutter-x: 0.35rem;
+      --bs-gutter-y: 0.35rem;
+      justify-content: flex-start;
+    }
+    #pos-grand-totals-cards > [class*="col-"],
+    #pos-products-summary-cards > [class*="col-"],
+    #pos-report-cards > [class*="col-"] {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 0 !important;
+    }
+    #pos-grand-totals-cards .feature-card,
+    #pos-products-summary-cards .feature-card,
+    #pos-report-cards .feature-card {
+      padding: 18px 14px;
+      border-radius: 16px;
+      max-width: 228px;
+      width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    #pos-grand-totals-cards .feature-card:hover,
+    #pos-products-summary-cards .feature-card:hover,
+    #pos-report-cards .feature-card:hover {
+      transform: translateY(-4px) scale(1.01);
+    }
+    #pos-grand-totals-cards .feature-card h4,
+    #pos-products-summary-cards .feature-card h4,
+    #pos-report-cards .feature-card h4 {
+      font-size: 0.82rem;
+      margin-bottom: 0.3rem;
+    }
+    #pos-grand-totals-cards .feature-card .fw-bold.fs-5,
+    #pos-products-summary-cards .feature-card .fw-bold.fs-5,
+    #pos-report-cards .feature-card .fw-bold.fs-5 {
+      font-size: 1.12rem !important;
+    }
+    #pos-grand-totals-cards .feature-card .text-muted.small,
+    #pos-products-summary-cards .feature-card .text-muted.small,
+    #pos-report-cards .feature-card .text-muted.small {
+      font-size: 0.72rem !important;
+      margin-bottom: 0.35rem !important;
+    }
+  </style>
+</head>
+<body>
+  <button class="sidebar-toggle" id="sidebarToggle" type="button" aria-label="فتح القائمة">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h5 class="mb-0">
+        <i class="fas fa-tachometer-alt me-2"></i>
+        لوحة التحكم
+      </h5>
+    </div>
+    <div class="sidebar-body">
+      <ul class="sidebar-nav">
+        <li><a href="/dashboard"><i class="fas fa-home"></i> الرئيسية</a></li>
+        <li><a href="/warehouses"><i class="fas fa-warehouse"></i> مخازن</a></li>
+        <li><a href="/pos"><i class="fas fa-cash-register"></i> نقطة البيع</a></li>
+        <li><a href="/logout" class="sidebar-logout"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="main-content" id="mainContent">
+    <nav class="navbar navbar-expand-lg navbar-light mb-4">
+      <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1">
+          <span class="brand-sb">SB</span><span class="brand-smart"> Smart</span>
+        </span>
+        <div class="navbar-nav ms-auto">
+          <span class="navbar-text">
+            <i class="fas fa-user me-1"></i>
+            <span id="userDisplayName">...</span>
+          </span>
+        </div>
+      </div>
+    </nav>
+
+    <div class="dashboard-container">
+      <div class="container">
+        <h1 class="page-title mb-4 text-dark">
+          <i class="fas fa-chart-line me-2"></i>
+          تقرير المبيعات
+        </h1>
+
+        <div class="mb-4">
+          <a href="/reports/pos-profit" class="btn btn-dashboard btn-info me-2">
+            <i class="fas fa-receipt me-1"></i>
+            تقرير المبيعات
+          </a>
+          <a href="/reports/warehouse-report" class="btn btn-outline-secondary">
+            <i class="fas fa-warehouse me-1"></i>
+            الجرد
+          </a>
+        </div>
+
+        <div class="warehouses-card card-form mb-4" id="pos-profit-filters-wrap">
+          <h5 class="card-form-title">
+            <i class="fas fa-filter me-2"></i>
+            فلترة بالتاريخ
+          </h5>
+          <div class="row g-3 align-items-end">
+            <div class="col-md-3">
+              <label class="form-label" for="report-from-date">من تاريخ</label>
+              <input type="date" class="form-control" id="report-from-date">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label" for="report-to-date">إلى تاريخ</label>
+              <input type="date" class="form-control" id="report-to-date">
+            </div>
+            <div class="col-md-3">
+              <button type="button" class="btn btn-dashboard btn-info w-100" id="btn-apply-report-filter">
+                <i class="fas fa-search me-1"></i>
+                عرض النتائج
+              </button>
+            </div>
+            <div class="col-md-3">
+              <button type="button" class="btn btn-outline-light w-100" id="btn-report-all">
+                <i class="fas fa-list me-1"></i>
+                الكل
+              </button>
+            </div>
+          </div>
+          <p id="report-filter-msg" class="form-message mt-3 mb-0"></p>
+        </div>
+
+        <h2 class="h5 page-title mb-3 mt-4 text-dark">
+          <i class="fas fa-calculator me-2"></i>
+          الإجماليات
+        </h2>
+        <div class="row pos-report-cards-row g-1 mb-2" id="pos-grand-totals-cards">
+          <div class="col-12 col-sm-auto mb-0">
+            <div class="feature-card"><p class="text-muted mb-0">جاري التحميل...</p></div>
+          </div>
+        </div>
+        <div class="warehouses-card card-table mb-4 d-none" id="pos-invoices-table-wrap">
+          <h5 class="card-form-title">
+            <i class="fas fa-file-invoice-dollar me-2"></i>
+            فواتير المبيعات (ضمن نفس الفترة)
+          </h5>
+          <div class="table-responsive">
+            <table class="table table-warehouses mb-0">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>رقم الفاتورة</th>
+                  <th>التاريخ</th>
+                  <th>العميل</th>
+                  <th>طريقة الدفع</th>
+                  <th>قبل الخصم</th>
+                  <th>الخصم</th>
+                  <th>بعد الخصم</th>
+                  <th>حالة التعديل</th>
+                </tr>
+              </thead>
+              <tbody id="pos-invoices-tbody">
+                <tr><td colspan="9" class="text-center text-muted">اضغط على كرت إجمالي المبيعات لعرض الفواتير.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="warehouses-card card-table mb-4 d-none" id="pos-expenses-table-wrap">
+          <h5 class="card-form-title">
+            <i class="fas fa-money-bill-wave me-2"></i>
+            قائمة المصروفات (ضمن نفس الفترة)
+          </h5>
+          <div class="table-responsive">
+            <table class="table table-warehouses mb-0">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>التاريخ</th>
+                  <th>المستخدم</th>
+                  <th>النوع</th>
+                  <th>الفئة</th>
+                  <th>طريقة الدفع</th>
+                  <th>المبلغ</th>
+                  <th>ملاحظة</th>
+                </tr>
+              </thead>
+              <tbody id="pos-expenses-tbody">
+                <tr><td colspan="8" class="text-center text-muted">اضغط على كرت إجمالي المصروفات لعرض القائمة.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <h2 class="h5 page-title mb-3 mt-4 text-dark">
+          <i class="fas fa-boxes-stacked me-2"></i>
+          ملخص المنتجات المباعة (ضمن الفترة)
+        </h2>
+        <div class="row pos-report-cards-row g-1 mb-2" id="pos-products-summary-cards"></div>
+
+        <h2 class="h5 page-title mb-3 mt-4 text-dark">
+          <i class="fas fa-credit-card me-2"></i>
+          حسب طريقة الدفع
+        </h2>
+        <div class="row pos-report-cards-row g-1 mb-2" id="pos-report-cards">
+          <div class="col-12 col-sm-auto mb-0">
+            <div class="feature-card">
+              <h4>جاري التحميل...</h4>
+              <p class="text-muted mb-0">يتم تجهيز التقرير</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="warehouses-card card-table mb-4 d-none" id="pos-products-table-wrap">
+          <h5 class="card-form-title">
+            <i class="fas fa-list-ul me-2"></i>
+            المنتجات المباعة في الفترة
+          </h5>
+          <p class="small text-muted mb-3">يُعرض كل منتج بيع منه كمية خلال الفترة المحددة فقط (نقطة البيع، مستخدم التقرير الحالي).</p>
+          <div class="table-responsive">
+            <table class="table table-warehouses" id="pos-products-sold-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>اسم المنتج</th>
+                  <th>الكمية المباعة</th>
+                  <th>إجمالي المبلغ</th>
+                </tr>
+              </thead>
+              <tbody id="pos-products-sold-tbody">
+                <tr><td colspan="4" class="text-center text-muted">—</td></tr>
+              </tbody>
+              <tfoot id="pos-products-sold-tfoot">
+                <tr class="table-secondary">
+                  <th colspan="2">الإجمالي</th>
+                  <th id="pos-products-sum-qty">—</th>
+                  <th id="pos-products-sum-amt">—</th>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/electron-titlebar.js"></script>
+  <script src="/js/dashboard.js"></script>
+  <script src="/js/reports/pos-profit-report.js"></script>
+</body>
+</html>

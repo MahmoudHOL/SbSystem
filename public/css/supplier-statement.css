@@ -1,0 +1,220 @@
+/**
+ * كشف حساب المورد
+ */
+body {
+  background: #0d0d0d;
+  color: #fff;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+.statement-container {
+  max-width: 1100px;
+  margin: 40px auto;
+}
+.statement-card {
+  background: rgba(26, 26, 26, 0.9);
+  border-radius: 20px;
+  padding: 20px 22px;
+  border: 1px solid rgba(184, 115, 51, 0.35);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+.statement-header-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  gap: 10px;
+}
+.statement-header-title h1 {
+  font-size: 20px;
+  margin: 0;
+  color: #c9a86c;
+}
+.statement-meta {
+  font-size: 20px;
+  line-height: 1.9;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+}
+.statement-meta span {
+  margin-left: 16px;
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 12px;
+  background: rgba(184, 115, 51, 0.16);
+  border: 1px solid rgba(184, 115, 51, 0.35);
+}
+.statement-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 14px 0 18px;
+  font-size: 20px;
+}
+.statement-summary .badge {
+  padding: 12px 18px;
+  border-radius: 14px;
+  border-width: 1px;
+  border-style: solid;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  line-height: 1.6;
+}
+.badge-debit {
+  background: rgba(220, 53, 69, 0.15);
+  border-color: rgba(220, 53, 69, 0.8);
+  color: #ffb3b8;
+}
+.badge-settlement {
+  background: rgba(13, 110, 253, 0.16);
+  border-color: rgba(13, 110, 253, 0.85);
+  color: #c9dcff;
+}
+.badge-credit {
+  background: rgba(25, 135, 84, 0.18);
+  border-color: rgba(25, 135, 84, 0.9);
+  color: #b7f5c9;
+}
+.badge-balance-neutral {
+  background: rgba(255, 193, 7, 0.18);
+  border-color: rgba(255, 193, 7, 0.9);
+  color: #ffe9a6;
+}
+.badge-balance-positive {
+  background: rgba(220, 53, 69, 0.18);
+  border-color: rgba(220, 53, 69, 0.9);
+  color: #ffb3b8;
+}
+.badge-balance-negative {
+  background: rgba(25, 135, 84, 0.18);
+  border-color: rgba(25, 135, 84, 0.9);
+  color: #b7f5c9;
+}
+.table-statement {
+  color: #e8e4df;
+  font-size: 13px;
+}
+.table-statement thead th {
+  background: rgba(184, 115, 51, 0.35);
+  border-color: rgba(184, 115, 51, 0.5);
+  color: #fff;
+  white-space: nowrap;
+}
+.table-statement tbody td {
+  border-color: rgba(255, 255, 255, 0.1);
+  vertical-align: middle;
+}
+.table-statement tbody tr.invoice-row:hover,
+.table-statement tbody tr.sale-row:hover {
+  background: rgba(184, 115, 51, 0.15);
+}
+.table-statement tbody tr.sale-row {
+  background: rgba(0, 0, 0, 0.2);
+}
+.table-statement tbody tr.payment-row {
+  background: rgba(0, 0, 0, 0.4);
+}
+.table-statement tbody tr.payment-row:hover {
+  background: rgba(0, 0, 0, 0.55);
+}
+.statement-footer-note {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 8px;
+}
+.btn-print-statement {
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #b87333, #c9a86c);
+  color: #fff;
+  font-size: 13px;
+}
+.btn-print-statement:hover {
+  filter: brightness(1.1);
+}
+.search-box {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+  font-size: 13px;
+}
+.search-box input {
+  max-width: 180px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(184, 115, 51, 0.5);
+  color: #e8e4df;
+  border-radius: 10px;
+  padding: 6px 10px;
+}
+.search-box button {
+  padding: 6px 12px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(184, 115, 51, 0.7);
+  color: #fff;
+  font-size: 12px;
+}
+.search-box button:hover {
+  filter: brightness(1.1);
+}
+.payments-card {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(184, 115, 51, 0.3);
+}
+.payments-title {
+  font-size: 14px;
+  color: #c9a86c;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+.table-payments {
+  color: #e8e4df;
+  font-size: 13px;
+}
+.table-payments thead th {
+  background: rgba(0, 0, 0, 0.45);
+  border-color: rgba(184, 115, 51, 0.5);
+  color: #fff;
+  white-space: nowrap;
+}
+.table-payments tbody td {
+  border-color: rgba(255, 255, 255, 0.08);
+  vertical-align: middle;
+}
+.amount-out {
+  color: #ff6b6b;
+  font-weight: 600;
+}
+.amount-in {
+  color: #4ade80;
+  font-weight: 600;
+}
+@media print {
+  body {
+    background: #fff;
+    color: #000;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .statement-card {
+    box-shadow: none;
+    border-radius: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .statement-meta {
+    font-size: 16px;
+  }
+  .statement-summary {
+    font-size: 16px;
+    gap: 10px;
+  }
+  .statement-summary .badge {
+    width: 100%;
+  }
+}

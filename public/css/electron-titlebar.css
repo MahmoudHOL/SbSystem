@@ -1,0 +1,74 @@
+/* شريط العنوان المخصص لـ Electron - يظهر فقط عند وجود window.electronAPI */
+.electron-titlebar {
+  display: none;
+  height: 40px;
+  background: linear-gradient(90deg, #ffffff, #f9fafb);
+  border-bottom: 1px solid rgba(229, 231, 235, 0.9);
+  -webkit-app-region: drag;
+  app-region: drag;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2000;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0 0 12px;
+  direction: rtl;
+}
+
+body.electron-app .electron-titlebar {
+  display: flex;
+}
+
+.electron-titlebar-title {
+  font-size: 14px;
+  color: #4b5563;
+  pointer-events: none;
+}
+
+.electron-titlebar-controls {
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+  display: flex;
+  height: 40px;
+}
+
+.electron-titlebar-controls button {
+  width: 52px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  color: #4b5563;
+  cursor: pointer;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.electron-titlebar-controls button:hover {
+  background: rgba(249, 250, 251, 1);
+}
+
+.electron-titlebar-controls button.close:hover {
+  background: #e81123;
+  color: #fff;
+}
+
+body.electron-app {
+  padding-top: 0;
+}
+
+body.electron-app.has-titlebar {
+  padding-top: 40px;
+}
+
+body.electron-app .electron-titlebar + .main-content,
+body.electron-app .electron-titlebar + .login-wrap,
+body.electron-app .electron-titlebar + .dashboard-container,
+body.electron-app .electron-titlebar + .bg-circuit {
+  /* المحتوى يبدأ تحت شريط العنوان */
+}

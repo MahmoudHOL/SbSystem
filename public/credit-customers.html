@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ملف عملاء الأجل | SB Smart</title>
+  <link href="/vendor/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/vendor/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/warehouses.css">
+  <link rel="stylesheet" href="/css/electron-titlebar.css">
+</head>
+<body>
+  <button class="sidebar-toggle" id="sidebarToggle" type="button" aria-label="فتح القائمة">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h5 class="mb-0">
+        <i class="fas fa-tachometer-alt me-2"></i>
+        لوحة التحكم
+      </h5>
+    </div>
+    <div class="sidebar-body">
+      <ul class="sidebar-nav">
+        <li><a href="/dashboard"><i class="fas fa-home"></i> الرئيسية</a></li>
+        <li><a href="/warehouses"><i class="fas fa-warehouse"></i> مخازن</a></li>
+        <li><a href="/pos"><i class="fas fa-cash-register"></i> نقطة البيع</a></li>
+        <li><a href="/credit-customers" class="active"><i class="fas fa-user-clock"></i> عملاء الأجل</a></li>
+        <li><a href="/expenses"><i class="fas fa-money-bill-wave"></i> المصروفات</a></li>
+        <li><a href="/logout" class="sidebar-logout"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="main-content" id="mainContent">
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+      <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1">
+          <span class="brand-sb">SB</span><span class="brand-smart"> Smart</span>
+        </span>
+        <div class="navbar-nav ms-auto">
+          <span class="navbar-text">
+            <i class="fas fa-user me-1"></i>
+            <span id="userDisplayName">...</span>
+          </span>
+        </div>
+      </div>
+    </nav>
+
+    <div class="dashboard-container">
+      <div class="container">
+        <h1 class="page-title mb-3">
+          <i class="fas fa-user-clock me-2"></i>
+          ملف عملاء الأجل
+        </h1>
+
+        <div class="warehouses-card card-table mb-4">
+          <h5 class="card-form-title">
+            <i class="fas fa-users me-2"></i>
+            العملاء الذين عليهم رصيد أجل
+          </h5>
+          <div class="table-responsive">
+            <table class="table table-warehouses mb-0">
+              <thead>
+                <tr>
+                  <th>العميل</th>
+                  <th>الهاتف</th>
+                  <th>عدد الفواتير المفتوحة</th>
+                  <th>إجمالي المطلوب</th>
+                  <th>مدفوع عند الفواتير</th>
+                  <th>المسدد</th>
+                  <th>المتبقي</th>
+                  <th>إجراء</th>
+                </tr>
+              </thead>
+              <tbody id="credit-customers-tbody">
+                <tr><td colspan="8" class="text-center text-muted">جاري التحميل...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="warehouses-card card-table mb-4 d-none" id="credit-invoices-wrap">
+          <h5 class="card-form-title">
+            <i class="fas fa-file-invoice-dollar me-2"></i>
+            فواتير العميل
+          </h5>
+          <p class="small text-muted mb-2" id="credit-customer-title">—</p>
+          <div class="table-responsive">
+            <table class="table table-warehouses mb-0">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>رقم الفاتورة</th>
+                  <th>تاريخ الفاتورة</th>
+                  <th>المطلوب</th>
+                  <th>المدفوع</th>
+                  <th>المسدد</th>
+                  <th>المتبقي</th>
+                  <th>الحالة</th>
+                  <th>تفاصيل</th>
+                  <th>سداد الفاتورة</th>
+                </tr>
+              </thead>
+              <tbody id="credit-invoices-tbody">
+                <tr><td colspan="10" class="text-center text-muted">—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <p id="credit-msg" class="form-message mt-2 mb-0"></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="creditInvoiceDetailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content inv-details-modal">
+        <div class="modal-header">
+          <h5 class="modal-title" id="creditInvoiceDetailsTitle">تفاصيل الفاتورة</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+        </div>
+        <div class="modal-body">
+          <p id="creditInvoiceDetailsMeta" class="mb-2 small text-white-50"></p>
+          <div class="table-responsive">
+            <table class="table table-warehouses inv-details-table mb-2">
+              <thead>
+                <tr>
+                  <th>المنتج</th>
+                  <th>الباركود</th>
+                  <th>الكمية</th>
+                  <th>سعر البيع</th>
+                  <th>المجموع</th>
+                </tr>
+              </thead>
+              <tbody id="creditInvoiceDetailsTbody">
+                <tr><td colspan="5" class="text-center text-muted">جاري التحميل...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-light btn-sm" data-bs-dismiss="modal">إغلاق</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/electron-titlebar.js"></script>
+  <script src="/js/dashboard.js"></script>
+  <script src="/js/credit-customers-page.js"></script>
+</body>
+</html>
+

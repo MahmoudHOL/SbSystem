@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>الجرد | SB Smart</title>
+  <link href="/vendor/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/vendor/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/warehouses.css">
+  <link rel="stylesheet" href="/css/electron-titlebar.css">
+  <style>
+    .summary-card-click { cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; }
+    .summary-card-click:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12); }
+    .summary-card-click:focus { outline: 2px solid rgba(184, 115, 51, 0.6); outline-offset: 2px; }
+    .chk-ok { accent-color: #16a34a; }
+    .chk-bad { accent-color: #dc2626; }
+  </style>
+</head>
+<body>
+  <button class="sidebar-toggle" id="sidebarToggle" type="button" aria-label="فتح القائمة">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h5 class="mb-0">
+        <i class="fas fa-tachometer-alt me-2"></i>
+        لوحة التحكم
+      </h5>
+    </div>
+    <div class="sidebar-body">
+      <ul class="sidebar-nav">
+        <li><a href="/dashboard"><i class="fas fa-home"></i> الرئيسية</a></li>
+        <li><a href="/warehouses"><i class="fas fa-warehouse"></i> مخازن</a></li>
+        <li><a href="/pos"><i class="fas fa-cash-register"></i> نقطة البيع</a></li>
+        <li><a href="/logout" class="sidebar-logout"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="main-content" id="mainContent">
+    <nav class="navbar navbar-expand-lg navbar-light mb-4">
+      <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1">
+          <span class="brand-sb">SB</span><span class="brand-smart"> Smart</span>
+        </span>
+        <div class="navbar-nav ms-auto">
+          <span class="navbar-text">
+            <i class="fas fa-user me-1"></i>
+            <span id="userDisplayName">...</span>
+          </span>
+        </div>
+      </div>
+    </nav>
+
+    <div class="dashboard-container">
+      <div class="container">
+        <h1 class="page-title mb-4 text-dark">
+          <i class="fas fa-warehouse me-2"></i>
+          الجرد
+        </h1>
+
+        <div class="mb-4">
+          <a href="/reports/pos-profit" class="btn btn-outline-secondary me-2">
+            <i class="fas fa-receipt me-1"></i>
+            تقرير المبيعات
+          </a>
+          <a href="/reports/warehouse-report" class="btn btn-dashboard btn-info">
+            <i class="fas fa-warehouse me-1"></i>
+            الجرد
+          </a>
+        </div>
+
+        <div class="warehouses-card card-form mb-4" id="warehouse-selector-wrap">
+          <h5 class="card-form-title">
+            <i class="fas fa-warehouse me-2"></i>
+            اختيار المخزن
+          </h5>
+          <div class="row g-3 align-items-end">
+            <div class="col-12">
+              <label class="form-label" for="warehouse-report-select">المخزن</label>
+              <select class="form-select" id="warehouse-report-select">
+                <option value="all" selected>كل المخازن</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <ul class="nav nav-tabs tabs-sb mb-4" id="warehouseReportTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tab-warehouse-inventory" data-bs-toggle="tab" data-bs-target="#panel-warehouse-inventory" type="button" role="tab">
+              الجرد
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-warehouse-sales-insights" data-bs-toggle="tab" data-bs-target="#panel-warehouse-sales-insights" type="button" role="tab">
+              فلوس البضاعة والمبيعات
+            </button>
+          </li>
+        </ul>
+
+        <div class="tab-content">
+          <div class="tab-pane fade show active" id="panel-warehouse-inventory" role="tabpanel">
+            <!-- ملخص عند اختيار «كل المخازن» -->
+            <div class="d-none mb-4" id="warehouse-all-summary">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <div class="feature-card text-center h-100" role="status">
+                <div class="feature-icon info mx-auto mb-2" style="width:56px;height:56px;font-size:1.25rem;">
+                  <i class="fas fa-boxes"></i>
+                </div>
+                <h4 class="mb-1" id="summary-total-products">—</h4>
+                <p class="text-muted mb-0 small">إجمالي المنتجات النشطة</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="feature-card text-center h-100 summary-card-click" id="card-at-minimum" tabindex="0" role="button" aria-label="عرض المنتجات التي وصلت للحد الأدنى">
+                <div class="feature-icon info mx-auto mb-2" style="width:56px;height:56px;font-size:1.25rem;">
+                  <i class="fas fa-arrow-down-short-wide"></i>
+                </div>
+                <h4 class="mb-1" id="summary-at-minimum">—</h4>
+                <p class="text-muted mb-1 small">سجلات وصلت للحد الأدنى</p>
+                <span class="badge bg-secondary">اضغط للتفاصيل</span>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="feature-card text-center h-100 summary-card-click" id="card-out-of-stock" tabindex="0" role="button" aria-label="عرض المنتجات التي نفدت">
+                <div class="feature-icon info mx-auto mb-2" style="width:56px;height:56px;font-size:1.25rem;">
+                  <i class="fas fa-ban"></i>
+                </div>
+                <h4 class="mb-1" id="summary-out-of-stock">—</h4>
+                <p class="text-muted mb-1 small">سجلات نفدت (كمية 0)</p>
+                <span class="badge bg-secondary">اضغط للتفاصيل</span>
+              </div>
+            </div>
+          </div>
+          <p class="text-muted small mt-2 mb-0">العمودان الأخيران يحسبان <strong>كل صف مخزن–منتج</strong> في النظام (نفس المنتج قد يظهر في أكثر من مخزن).</p>
+        </div>
+
+            <div class="warehouses-card card-form mb-4 d-none" id="warehouse-products-wrap">
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+            <h5 class="card-form-title mb-0" id="warehouse-products-title">
+              <i class="fas fa-boxes-stacked me-2"></i>
+              منتجات المخزن
+            </h5>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-dashboard btn-info btn-sm" id="btn-print-warehouse-check-all">
+                <i class="fas fa-print me-1"></i>
+                طباعة الكل
+              </button>
+              <button type="button" class="btn btn-outline-danger btn-sm" id="btn-print-warehouse-check-errors">
+                <i class="fas fa-triangle-exclamation me-1"></i>
+                طباعة الخطأ فقط
+              </button>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-sm table-warehouses mb-0">
+              <thead>
+                <tr>
+                  <th>المنتج</th>
+                  <th>الباركود</th>
+                  <th>الكمية</th>
+                  <th>صحيح</th>
+                  <th>خطأ</th>
+                  <th>الكمية الصحيحة</th>
+                </tr>
+              </thead>
+              <tbody id="warehouse-products-tbody">
+                <tr><td colspan="6" class="text-center text-muted">اختر مخزناً لعرض البضاعة</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+          </div>
+
+          <div class="tab-pane fade" id="panel-warehouse-sales-insights" role="tabpanel">
+            <div class="warehouses-card card-form mb-4">
+              <h5 class="card-form-title">
+                <i class="fas fa-filter me-2"></i>
+                فلترة المبيعات بالتاريخ
+              </h5>
+              <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                  <label class="form-label" for="insights-from-date">من تاريخ</label>
+                  <input type="date" class="form-control" id="insights-from-date">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label" for="insights-to-date">إلى تاريخ</label>
+                  <input type="date" class="form-control" id="insights-to-date">
+                </div>
+                <div class="col-md-2">
+                  <button type="button" class="btn btn-dashboard btn-info w-100" id="btn-insights-apply">
+                    تطبيق
+                  </button>
+                </div>
+                <div class="col-md-2">
+                  <button type="button" class="btn btn-outline-light w-100" id="btn-insights-reset">
+                    الكل
+                  </button>
+                </div>
+              </div>
+              <p id="insights-filter-msg" class="form-message mt-3 mb-0"></p>
+            </div>
+
+            <div class="row g-3 mb-4">
+              <div class="col-md-4">
+                <div class="feature-card text-center">
+                  <div class="feature-icon info mx-auto mb-2" style="width:56px;height:56px;font-size:1.25rem;">
+                    <i class="fas fa-coins"></i>
+                  </div>
+                  <h4 class="mb-1" id="inventory-value-total">—</h4>
+                  <p class="text-muted mb-0 small">قيمة البضاعة (مجمع)</p>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="feature-card text-center">
+                  <div class="feature-icon info mx-auto mb-2" style="width:56px;height:56px;font-size:1.25rem;">
+                    <i class="fas fa-warehouse"></i>
+                  </div>
+                  <h4 class="mb-1" id="inventory-value-selected">—</h4>
+                  <p class="text-muted mb-0 small">قيمة بضاعة المخزن المختار</p>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="feature-card text-center">
+                  <div class="feature-icon info mx-auto mb-2" style="width:56px;height:56px;font-size:1.25rem;">
+                    <i class="fas fa-shopping-basket"></i>
+                  </div>
+                  <h4 class="mb-1" id="total-sold-items">—</h4>
+                  <p class="text-muted mb-0 small">إجمالي البنود المباعة</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="warehouses-card card-table mb-4">
+              <h5 class="card-form-title">
+                <i class="fas fa-fire me-2"></i>
+                أكثر المنتجات مبيعًا
+              </h5>
+              <div class="table-responsive">
+                <table class="table table-warehouses mb-0">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>المنتج</th>
+                      <th>عدد مرات البيع</th>
+                      <th>الكمية المباعة</th>
+                      <th>إجمالي المبيعات</th>
+                    </tr>
+                  </thead>
+                  <tbody id="top-selling-tbody">
+                    <tr><td colspan="5" class="text-center text-muted">جاري التحميل...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="warehouses-card card-table mb-4">
+              <h5 class="card-form-title">
+                <i class="fas fa-list me-2"></i>
+                كل المنتجات حسب الفترة
+              </h5>
+              <div class="table-responsive">
+                <table class="table table-warehouses mb-0">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>المنتج</th>
+                      <th>عدد مرات البيع</th>
+                      <th>الكمية المباعة</th>
+                      <th>إجمالي المبيعات</th>
+                    </tr>
+                  </thead>
+                  <tbody id="sales-products-tbody">
+                    <tr><td colspan="5" class="text-center text-muted">جاري التحميل...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- نافذة تفاصيل التنبيهات -->
+  <div class="modal fade" id="modal-stock-alerts" tabindex="-1" aria-labelledby="modal-stock-alerts-label" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content inv-details-modal">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modal-stock-alerts-label">التفاصيل</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+        </div>
+        <div class="modal-body p-0">
+          <div class="table-responsive" style="max-height: 65vh;">
+            <table class="table table-sm table-warehouses mb-0">
+              <thead class="sticky-top bg-white">
+                <tr>
+                  <th>المخزن</th>
+                  <th>المنتج</th>
+                  <th>الباركود</th>
+                  <th>الكمية</th>
+                  <th id="modal-alerts-extra-th" class="d-none">الحد الأدنى</th>
+                </tr>
+              </thead>
+              <tbody id="modal-stock-alerts-tbody">
+                <tr><td colspan="5" class="text-center text-muted p-4">جاري التحميل...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/warehouses-sync.js"></script>
+  <script src="/js/electron-titlebar.js"></script>
+  <script src="/js/dashboard.js"></script>
+  <script src="/js/reports/warehouse-report.js"></script>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>كشف حساب مورد | SB Smart</title>
+  <link href="/vendor/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/warehouses.css">
+  <link rel="stylesheet" href="/css/invoices.css">
+  <link rel="stylesheet" href="/css/supplier-statement.css">
+</head>
+<body>
+  <div class="statement-container">
+    <div class="statement-card">
+      <div class="statement-header-title">
+        <h1><i class="fas fa-balance-scale me-2"></i>كشف حساب مورد</h1>
+        <div class="d-flex gap-2">
+          <button type="button" class="btn-print-statement no-print" id="btn-back">
+            <i class="fas fa-arrow-right me-1"></i>عودة للرئيسية
+          </button>
+          <button type="button" class="btn-print-statement no-print" id="btn-supplier-pay">
+            <i class="fas fa-hand-holding-usd me-1"></i>تسديد
+          </button>
+          <button type="button" class="btn-print-statement no-print" id="btn-print-statement">
+            <i class="fas fa-print me-1"></i>طباعة
+          </button>
+        </div>
+      </div>
+      <div id="supplier-info" class="statement-meta mb-2">
+        <span>المورد: ...</span>
+      </div>
+      <div id="statement-summary" class="statement-summary"></div>
+      <div class="search-box no-print">
+        <span>بحث برقم الفاتورة:</span>
+        <input type="number" id="search-invoice" placeholder="رقم الفاتورة">
+        <button type="button" id="btn-search-invoice"><i class="fas fa-search me-1"></i>بحث</button>
+        <button type="button" id="btn-clear-search"><i class="fas fa-times me-1"></i>إلغاء البحث</button>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm table-statement">
+          <thead>
+            <tr>
+              <th>النوع</th>
+              <th># الفاتورة</th>
+              <th>التاريخ</th>
+              <th>عدد المنتجات</th>
+              <th>المبلغ المطلوب</th>
+              <th>المدفوع</th>
+              <th>مدين (علينا)</th>
+              <th>دائن (له عندنا)</th>
+              <th>الرصيد بعد الحركة</th>
+              <th>المستخدم</th>
+              <th class="no-print">التفاصيل</th>
+            </tr>
+          </thead>
+          <tbody id="statement-tbody">
+            <tr><td colspan="10" class="text-center text-muted">جاري تحميل كشف الحساب...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="payments-card">
+        <div class="payments-title"><i class="fas fa-hand-holding-usd me-1"></i>سجل المدفوعات</div>
+        <div class="table-responsive">
+          <table class="table table-sm table-payments">
+            <thead>
+              <tr>
+                <th>التاريخ</th>
+                <th>النوع</th>
+                <th>المبلغ</th>
+                <th>ملاحظة</th>
+                <th>المستخدم</th>
+              </tr>
+            </thead>
+            <tbody id="payments-tbody">
+              <tr><td colspan="5" class="text-center text-muted">لا توجد مدفوعات بعد.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <p class="statement-footer-note">
+        <i class="fas fa-info-circle me-1"></i>
+        الرصيد الموجب يعني أنك مدين للمورد، والرصيد السالب يعني أن المورد مدين لك.
+      </p>
+    </div>
+  </div>
+
+  <!-- نافذة تسديد مورد -->
+  <div class="modal fade" id="modal-supplier-pay" tabindex="-1" aria-labelledby="modal-supplier-pay-label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content inv-supplier-modal">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modal-supplier-pay-label"><i class="fas fa-hand-holding-usd me-2"></i>تسديد مع المورد</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">نوع الحركة</label>
+            <select id="pay-direction" class="form-select">
+              <option value="to_supplier">أنا أدفع للمورد</option>
+              <option value="from_supplier">المورد يدفع لي</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">المبلغ</label>
+            <input type="number" id="pay-amount" class="form-control" min="0.01" step="0.01" placeholder="0.00">
+          </div>
+          <div class="mb-2">
+            <label class="form-label">ملاحظة (اختياري)</label>
+            <input type="text" id="pay-note" class="form-control" placeholder="مثال: تسديد نقدي / تحويل بنكي">
+          </div>
+          <p id="pay-msg" class="form-message mt-1 mb-0"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+          <button type="button" class="btn-print-statement" id="btn-save-pay"><i class="fas fa-check me-1"></i>حفظ الحركة</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/vendor/@fortawesome/fontawesome-free/js/all.min.js"></script>
+  <script src="/js/supplier-statement.js"></script>
+</body>
+</html>

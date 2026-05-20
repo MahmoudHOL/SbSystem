@@ -1,0 +1,110 @@
+
+==== Unhandled Exception ====
+Traceback (most recent call last):
+  File "C:\Users\Mahmoud Khaled\Desktop\sb\license-manager\license_manager.py", line 383, in make_trial
+    self.current_license = self._build_license("trial", "active", expires)
+                           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mahmoud Khaled\Desktop\sb\license-manager\license_manager.py", line 368, in _build_license
+    fp = self._resolve_fingerprint(require_server=True)
+  File "C:\Users\Mahmoud Khaled\Desktop\sb\license-manager\license_manager.py", line 149, in _resolve_fingerprint
+    raise RuntimeError("السيرفر غير متصل. شغّل sb-server.exe أولاً ثم أعد المحاولة.")
+RuntimeError: السيرفر غير متصل. شغّل sb-server.exe أولاً ثم أعد المحاولة.
+
+==== Unhandled Exception ====
+Traceback (most recent call last):
+  File "C:\Users\Mahmoud Khaled\Desktop\sb\license-manager\license_manager.py", line 383, in make_trial
+    self.current_license = self._build_license("trial", "active", expires)
+                           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mahmoud Khaled\Desktop\sb\license-manager\license_manager.py", line 368, in _build_license
+    fp = self._resolve_fingerprint(require_server=True)
+  File "C:\Users\Mahmoud Khaled\Desktop\sb\license-manager\license_manager.py", line 149, in _resolve_fingerprint
+    raise RuntimeError("السيرفر غير متصل. شغّل sb-server.exe أولاً ثم أعد المحاولة.")
+RuntimeError: السيرفر غير متصل. شغّل sb-server.exe أولاً ثم أعد المحاولة.
+
+==== Unhandled Exception ====
+Traceback (most recent call last):
+  File "C:\Users\Mahmoud Khaled\Desktop\sb\license-manager\license_manager.py", line 393, in make_permanent
+    self.current_license = self._build_license("permanent", "active", None)
+                           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mahmoud Khaled\Desktop\sb\license-manager\license_manager.py", line 368, in _build_license
+    fp = self._resolve_fingerprint(require_server=True)
+  File "C:\Users\Mahmoud Khaled\Desktop\sb\license-manager\license_manager.py", line 149, in _resolve_fingerprint
+    raise RuntimeError("السيرفر غير متصل. شغّل sb-server.exe أولاً ثم أعد المحاولة.")
+RuntimeError: السيرفر غير متصل. شغّل sb-server.exe أولاً ثم أعد المحاولة.
+
+==== Unhandled Exception ====
+Traceback (most recent call last):
+  File "C:\Users\Mahmoud Khaled\Desktop\sb\license-manager\license_manager.py", line 383, in make_trial
+    self.current_license = self._build_license("trial", "active", expires)
+                           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mahmoud Khaled\Desktop\sb\license-manager\license_manager.py", line 368, in _build_license
+    fp = self._resolve_fingerprint(require_server=True)
+  File "C:\Users\Mahmoud Khaled\Desktop\sb\license-manager\license_manager.py", line 149, in _resolve_fingerprint
+    raise RuntimeError("السيرفر غير متصل. شغّل sb-server.exe أولاً ثم أعد المحاولة.")
+RuntimeError: السيرفر غير متصل. شغّل sb-server.exe أولاً ثم أعد المحاولة.
+
+==== Unhandled Exception ====
+Traceback (most recent call last):
+  File "C:\Users\Mahmoud Khaled\Desktop\sb\license-manager\license_manager.py", line 383, in make_trial
+    self.current_license = self._build_license("trial", "active", expires)
+                           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mahmoud Khaled\Desktop\sb\license-manager\license_manager.py", line 368, in _build_license
+    fp = self._resolve_fingerprint(require_server=True)
+  File "C:\Users\Mahmoud Khaled\Desktop\sb\license-manager\license_manager.py", line 149, in _resolve_fingerprint
+    raise RuntimeError("السيرفر غير متصل. شغّل sb-server.exe أولاً ثم أعد المحاولة.")
+RuntimeError: السيرفر غير متصل. شغّل sb-server.exe أولاً ثم أعد المحاولة.
+
+==== Unhandled Exception ====
+Traceback (most recent call last):
+  File "C:\Users\Mahmoud Khaled\Desktop\sb\license-manager\license_manager.py", line 393, in make_permanent
+    self.current_license = self._build_license("permanent", "active", None)
+                           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mahmoud Khaled\Desktop\sb\license-manager\license_manager.py", line 368, in _build_license
+    fp = self._resolve_fingerprint(require_server=True)
+  File "C:\Users\Mahmoud Khaled\Desktop\sb\license-manager\license_manager.py", line 149, in _resolve_fingerprint
+    raise RuntimeError("السيرفر غير متصل. شغّل sb-server.exe أولاً ثم أعد المحاولة.")
+RuntimeError: السيرفر غير متصل. شغّل sb-server.exe أولاً ثم أعد المحاولة.
+
+==== Unhandled Exception ====
+Traceback (most recent call last):
+  File "C:\Users\Mahmoud Khaled\Desktop\sb\license-manager\license_manager.py", line 383, in make_trial
+    self.current_license = self._build_license("trial", "active", expires)
+                           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mahmoud Khaled\Desktop\sb\license-manager\license_manager.py", line 368, in _build_license
+    fp = self._resolve_fingerprint(require_server=True)
+  File "C:\Users\Mahmoud Khaled\Desktop\sb\license-manager\license_manager.py", line 149, in _resolve_fingerprint
+    raise RuntimeError("السيرفر غير متصل. شغّل sb-server.exe أولاً ثم أعد المحاولة.")
+RuntimeError: السيرفر غير متصل. شغّل sb-server.exe أولاً ثم أعد المحاولة.
+
+==== Unhandled Exception ====
+Traceback (most recent call last):
+  File "C:\Users\Mahmoud Khaled\Desktop\sb\license-manager\license_manager.py", line 383, in make_trial
+    self.current_license = self._build_license("trial", "active", expires)
+                           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mahmoud Khaled\Desktop\sb\license-manager\license_manager.py", line 368, in _build_license
+    fp = self._resolve_fingerprint(require_server=True)
+  File "C:\Users\Mahmoud Khaled\Desktop\sb\license-manager\license_manager.py", line 149, in _resolve_fingerprint
+    raise RuntimeError("السيرفر غير متصل. شغّل sb-server.exe أولاً ثم أعد المحاولة.")
+RuntimeError: السيرفر غير متصل. شغّل sb-server.exe أولاً ثم أعد المحاولة.
+
+==== Unhandled Exception ====
+Traceback (most recent call last):
+  File "C:\Users\Mahmoud Khaled\Desktop\sb\license-manager\license_manager.py", line 383, in make_trial
+    self.current_license = self._build_license("trial", "active", expires)
+                           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mahmoud Khaled\Desktop\sb\license-manager\license_manager.py", line 368, in _build_license
+    fp = self._resolve_fingerprint(require_server=True)
+  File "C:\Users\Mahmoud Khaled\Desktop\sb\license-manager\license_manager.py", line 149, in _resolve_fingerprint
+    raise RuntimeError("السيرفر غير متصل. شغّل sb-server.exe أولاً ثم أعد المحاولة.")
+RuntimeError: السيرفر غير متصل. شغّل sb-server.exe أولاً ثم أعد المحاولة.
+
+==== Unhandled Exception ====
+Traceback (most recent call last):
+  File "C:\Users\Mahmoud Khaled\Desktop\sb\license-manager\license_manager.py", line 393, in make_permanent
+    self.current_license = self._build_license("permanent", "active", None)
+                           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mahmoud Khaled\Desktop\sb\license-manager\license_manager.py", line 368, in _build_license
+    fp = self._resolve_fingerprint(require_server=True)
+  File "C:\Users\Mahmoud Khaled\Desktop\sb\license-manager\license_manager.py", line 149, in _resolve_fingerprint
+    raise RuntimeError("السيرفر غير متصل. شغّل sb-server.exe أولاً ثم أعد المحاولة.")
+RuntimeError: السيرفر غير متصل. شغّل sb-server.exe أولاً ثم أعد المحاولة.

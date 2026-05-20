@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>الإعدادات | SB Smart</title>
+  <link href="/vendor/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/vendor/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/settings.css">
+  <link rel="stylesheet" href="/css/electron-titlebar.css">
+</head>
+<body>
+  <button class="sidebar-toggle" id="sidebarToggle" type="button" aria-label="فتح القائمة">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h5 class="mb-0">
+        <i class="fas fa-tachometer-alt me-2"></i>
+        لوحة التحكم
+      </h5>
+    </div>
+    <div class="sidebar-body">
+      <ul class="sidebar-nav">
+        <li>
+          <a href="/dashboard">
+            <i class="fas fa-home"></i>
+            الرئيسية
+          </a>
+        </li>
+        <li>
+          <a href="/warehouses">
+            <i class="fas fa-warehouse"></i>
+            مخازن
+          </a>
+        </li>
+        <li>
+          <a href="/settings" class="active">
+            <i class="fas fa-cog"></i>
+            الإعدادات
+          </a>
+        </li>
+        <li class="mt-4">
+          <a href="/logout" class="sidebar-logout">
+            <i class="fas fa-sign-out-alt"></i>
+            تسجيل الخروج
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="main-content" id="mainContent">
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+      <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1">
+          <span class="brand-sb">SB</span><span class="brand-smart"> Smart</span>
+        </span>
+        <div class="navbar-nav ms-auto">
+          <span class="navbar-text">
+            <i class="fas fa-user me-1"></i>
+            <span id="userDisplayName">...</span>
+          </span>
+        </div>
+      </div>
+    </nav>
+
+    <div class="dashboard-container">
+      <div class="container">
+        <h2 class="settings-page-title">
+          <i class="fas fa-cog me-2"></i>
+          الإعدادات
+        </h2>
+
+        <div class="row">
+          <div class="col-md-4 col-lg-3 mb-4">
+            <a href="/settings/users" class="text-decoration-none">
+              <div class="feature-card">
+                <div class="feature-icon info">
+                  <i class="fas fa-users"></i>
+                </div>
+                <h4>المستخدمون</h4>
+                <p class="text-muted">إدارة المستخدمين وإنشاء وحذف (تعطيل)</p>
+                <span class="btn btn-dashboard btn-info">
+                  <i class="fas fa-arrow-left me-2"></i>
+                  المستخدمون
+                </span>
+              </div>
+            </a>
+          </div>
+          <div class="col-md-4 col-lg-3 mb-4">
+            <a href="/settings/system" class="text-decoration-none">
+              <div class="feature-card">
+                <div class="feature-icon info">
+                  <i class="fas fa-sliders-h"></i>
+                </div>
+                <h4>إعدادات النظام</h4>
+                <p class="text-muted">طرق الدفع وإعدادات عامة</p>
+                <span class="btn btn-dashboard btn-info">
+                  <i class="fas fa-arrow-left me-2"></i>
+                  إعدادات النظام
+                </span>
+              </div>
+            </a>
+          </div>
+          <div class="col-md-4 col-lg-3 mb-4">
+            <a href="/settings/system#panel-backup-paths" class="text-decoration-none">
+              <div class="feature-card">
+                <div class="feature-icon info">
+                  <i class="fas fa-database"></i>
+                </div>
+                <h4>نسخ احتياطي</h4>
+                <p class="text-muted">تحديد مسارات النسخ الاحتياطي واستيراد البيانات</p>
+                <span class="btn btn-dashboard btn-info">
+                  <i class="fas fa-arrow-left me-2"></i>
+                  نسخ احتياطي
+                </span>
+              </div>
+            </a>
+          </div>
+
+          <div class="col-md-4 col-lg-3 mb-4" id="settings-permissions-card">
+            <div class="feature-card permission-feature-card h-100">
+              <div class="feature-icon info">
+                <i class="fas fa-user-shield"></i>
+              </div>
+              <h4>إدارة الصلاحيات</h4>
+              <p class="text-muted mb-2">إنشاء نوع صلاحية وربطه بالموظف وتحديد صلاحيات المستخدمين.</p>
+              <button class="btn btn-dashboard btn-info" id="btn-open-permissions-panel" type="button">
+                <i class="fas fa-sliders me-2"></i>
+                فتح لوحة الصلاحيات
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-card d-none" id="permissions-panel">
+          <div class="settings-card-header">
+            <i class="fas fa-user-shield"></i>
+            لوحة الصلاحيات (settings/users)
+          </div>
+          <div class="settings-card-body">
+            <div class="row g-3">
+              <div class="col-lg-4">
+                <h6 class="mb-3">إنشاء نوع صلاحية</h6>
+                <form id="form-create-permission-role">
+                  <div class="mb-2">
+                    <label class="form-label">رمز النوع (code)</label>
+                    <input type="text" class="form-control" id="perm-role-code" placeholder="مثال: cashier_role" required>
+                  </div>
+                  <div class="mb-2">
+                    <label class="form-label">اسم النوع</label>
+                    <input type="text" class="form-control" id="perm-role-name" placeholder="مثال: كاشير" required>
+                  </div>
+                  <div class="mb-2">
+                    <label class="form-label">وصف</label>
+                    <input type="text" class="form-control" id="perm-role-description" placeholder="اختياري">
+                  </div>
+                  <button type="submit" class="btn btn-gold w-100">إضافة النوع</button>
+                </form>
+                <p id="permissions-msg" class="form-message mt-3 mb-0"></p>
+              </div>
+
+              <div class="col-lg-4">
+                <h6 class="mb-3">تحديد نوع الصلاحية وصلاحياته</h6>
+                <div class="mb-2">
+                  <label class="form-label">نوع الصلاحية</label>
+                  <select id="perm-role-select" class="form-select"></select>
+                </div>
+                <div id="perm-actions-wrap" class="d-grid gap-2 mt-3"></div>
+                <small class="text-muted d-block mt-2">إذا كانت صلاحية "عرض" غير مفعلة، يتم منع الدخول لمسار المستخدمين.</small>
+              </div>
+
+              <div class="col-lg-4">
+                <h6 class="mb-3">ربط نوع الصلاحية بالموظف</h6>
+                <div class="mb-2">
+                  <label class="form-label">الموظف</label>
+                  <select id="perm-user-select" class="form-select"></select>
+                </div>
+                <div class="mb-2">
+                  <label class="form-label">نوع الصلاحية</label>
+                  <select id="perm-assign-role-select" class="form-select"></select>
+                </div>
+                <button id="btn-assign-role" class="btn btn-gold w-100 mt-1" type="button">ربط الصلاحية</button>
+                <div class="table-responsive mt-3">
+                  <table class="table table-sm settings-table mb-0">
+                    <thead>
+                      <tr>
+                        <th>الموظف</th>
+                        <th>نوع الصلاحية</th>
+                      </tr>
+                    </thead>
+                    <tbody id="perm-users-tbody">
+                      <tr><td colspan="2" class="text-center text-muted">جاري التحميل...</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <small class="text-muted d-block mt-2">ملاحظة: admin صلاحياته كاملة دائمًا.</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="text-center py-3 mt-5">
+      <div class="container-fluid">
+        <p class="mb-0 footer-text">
+          <i class="fas fa-copyright me-1"></i>
+          <span id="currentYear"></span> SB Smart · conver_lang
+        </p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/electron-titlebar.js"></script>
+  <script src="/js/dashboard.js"></script>
+  <script src="/js/settings.js"></script>
+  <script src="/js/settings-home.js"></script>
+</body>
+</html>

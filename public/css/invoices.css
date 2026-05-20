@@ -1,0 +1,712 @@
+/**
+ * فاتورة الشراء - نفس أسلوب مبيعات الجملة (عمودين: بحث/إضافة | سلة)
+ * ثيم فاتح مع نحاسي/ذهبي
+ */
+
+/* ضمان ظهور محتوى النوافذ المنبثقة فوق الـ backdrop (حل مشكلة ظهور الـ backdrop فقط) */
+.modal {
+  z-index: 1055;
+}
+.modal-backdrop {
+  z-index: 1050;
+}
+.modal.show .modal-dialog {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+.modal .modal-content {
+  position: relative;
+  z-index: 1;
+  background-color: #ffffff !important;
+  min-height: 120px;
+}
+.modal-helper-white {
+  color: #ffffff !important;
+}
+
+#panel-transfer .modal-helper-white,
+#panel-transfer .small.text-muted {
+  color: #374151 !important;
+}
+
+/* ضمان ظهور محتوى تاب الفواتير */
+#panel-invoices.show {
+  display: block !important;
+}
+.invoice-panel:not(.d-none) {
+  display: block !important;
+}
+
+.invoice-cashier-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  padding: 15px 0;
+  min-height: 65vh;
+  background: transparent;
+}
+
+@media (max-width: 992px) {
+  .invoice-cashier-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+  }
+}
+
+/* العمود الأيسر: البحث والإضافة */
+.invoice-product-grid {
+  background: #ffffff;
+  backdrop-filter: blur(14px);
+  border-radius: 20px;
+  padding: 15px;
+  border: 1px solid rgba(229, 231, 235, 0.9);
+  color: #111827;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 75vh;
+}
+
+.invoice-product-grid .search-bar {
+  margin-bottom: 15px;
+}
+
+.invoice-product-grid .search-bar input {
+  width: 100%;
+  padding: 12px 15px;
+  background: #f9fafb;
+  border: 1px solid rgba(209, 213, 219, 0.9);
+  border-radius: 12px;
+  font-size: 16px;
+  color: #e8e4df;
+}
+
+.invoice-product-grid .search-bar input::placeholder {
+  color: #9ca3af;
+}
+
+.invoice-product-grid .search-bar input:focus {
+  outline: none;
+  border-color: rgba(184, 115, 51, 0.8);
+  box-shadow: 0 0 0 3px rgba(184, 115, 51, 0.22);
+}
+
+.invoice-product-grid .search-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+/* قائمة المنتجات في عمود إضافة صنف للسلة */
+.inv-products-list {
+  display: none !important;
+  flex: 1;
+  min-height: 120px;
+  max-height: none;
+  overflow-y: visible;
+  overflow-x: hidden;
+  border: 1px solid rgba(229, 231, 235, 0.9);
+  border-radius: 12px;
+  padding: 10px;
+  background: #f9fafb;
+}
+
+.inv-products-list .inv-products-placeholder {
+  color: #4b5563;
+  font-size: 14px;
+}
+
+.inv-products-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.inv-product-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #ffffff;
+  border: 1px solid rgba(229, 231, 235, 0.9);
+  border-radius: 10px;
+  color: #111827;
+}
+
+.inv-product-item .inv-product-name {
+  font-weight: 600;
+  color: #111827;
+  flex: 1 1 100%;
+}
+
+.inv-product-item .inv-product-meta {
+  font-size: 12px;
+  color: #6b7280;
+  flex: 1 1 auto;
+}
+
+.inv-product-item .btn-inv-add-product {
+  padding: 6px 12px;
+  font-size: 13px;
+  background: linear-gradient(135deg, rgba(184, 115, 51, 0.9), rgba(201, 168, 108, 0.9));
+  border: 1px solid rgba(184, 115, 51, 0.8);
+  color: #111827;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.inv-product-item .btn-inv-add-product:hover {
+  background: linear-gradient(135deg, rgba(184, 115, 51, 1), rgba(201, 168, 108, 1));
+}
+
+.invoice-product-grid .inv-manual-form {
+  margin-top: 15px;
+  padding: 15px;
+  background: #f9fafb;
+  border-radius: 12px;
+  border: 1px solid rgba(184, 115, 51, 0.2);
+}
+
+.invoice-product-grid .inv-manual-form .form-label {
+  color: #374151;
+}
+
+.invoice-product-grid .form-control {
+  background: #f9fafb !important;
+  border: 1px solid rgba(209, 213, 219, 0.9) !important;
+  color: #111827 !important;
+}
+
+/* العمود الأيمن: السلة — النموذج بالكامل قابل للتمرير */
+.invoice-cart-section {
+  background: #ffffff;
+  backdrop-filter: blur(14px);
+  border-radius: 20px;
+  padding: 15px;
+  border: 1px solid rgba(229, 231, 235, 0.9);
+  color: #111827;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 75vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.invoice-cart-section::-webkit-scrollbar {
+  width: 10px;
+}
+
+.invoice-cart-section::-webkit-scrollbar-track {
+  background: #e5e7eb;
+  border-radius: 10px;
+}
+
+.invoice-cart-section::-webkit-scrollbar-thumb {
+  background: rgba(184, 115, 51, 0.6);
+  border-radius: 10px;
+}
+
+.invoice-cart-section::-webkit-scrollbar-thumb:hover {
+  background: rgba(184, 115, 51, 0.85);
+}
+
+.invoice-cart-section h3 {
+  color: #b87333;
+  font-size: 18px;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid rgba(184, 115, 51, 0.3);
+  flex-shrink: 0;
+}
+
+.invoice-cart-section .invoice-customer-info {
+  background: #f9fafb;
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  border: 1px solid rgba(229, 231, 235, 0.9);
+  flex-shrink: 0;
+}
+
+.invoice-cart-section .invoice-customer-info h5 {
+  margin-bottom: 8px;
+  color: #b87333;
+  font-size: 14px;
+}
+
+.invoice-cart-section .invoice-customer-info label {
+  color: #374151;
+  font-size: 13px;
+}
+
+.invoice-cart-section .invoice-customer-info select,
+.invoice-cart-section .invoice-customer-info input {
+  width: 100%;
+  padding: 10px;
+  background: #ffffff;
+  border: 1px solid rgba(209, 213, 219, 0.9);
+  border-radius: 10px;
+  color: #111827;
+  margin-top: 4px;
+  margin-bottom: 10px;
+}
+
+.invoice-cart-section .invoice-cart-items {
+  overflow-x: auto;
+  border: 1px solid rgba(229, 231, 235, 0.9);
+  border-radius: 12px;
+  padding: 10px;
+  min-height: 120px;
+  flex-shrink: 0;
+  background: #f9fafb;
+}
+
+/* رسالة السلة الفارغة — ألوان فاتحة لظهور واضح على الخلفية الداكنة */
+#inv-cart-empty.inv-empty-msg,
+.invoice-cart-section .inv-empty-msg {
+  color: #4b5563 !important;
+  opacity: 1;
+}
+
+.invoice-cart-section .invoice-cart-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  color: #111827;
+}
+
+.invoice-cart-section .invoice-cart-table th {
+  background: linear-gradient(135deg, rgba(248, 250, 252, 0.98), rgba(253, 244, 226, 0.9));
+  padding: 10px 8px;
+  text-align: right;
+  border-bottom: 2px solid rgba(209, 213, 219, 0.9);
+  font-weight: bold;
+  color: #111827;
+}
+
+.invoice-cart-section .invoice-cart-table td {
+  padding: 8px;
+  border-bottom: 1px solid rgba(229, 231, 235, 0.9);
+  vertical-align: middle;
+}
+
+.invoice-cart-section .invoice-cart-table tr:hover {
+  background: rgba(253, 244, 226, 0.6);
+}
+
+.invoice-cart-section .invoice-qty-input {
+  width: 60px;
+  padding: 6px 8px;
+  text-align: center;
+  background: #f9fafb;
+  border: 1px solid rgba(209, 213, 219, 0.9);
+  border-radius: 8px;
+  color: #111827;
+}
+
+.invoice-cart-section .btn-inv-minus {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #c45c5c, #a04545);
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+}
+
+.invoice-cart-section .btn-inv-plus {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+}
+
+.invoice-cart-section .btn-inv-change-price {
+  padding: 6px 10px;
+  border: 1px solid rgba(201, 168, 108, 0.7);
+  border-radius: 8px;
+  background: rgba(253, 244, 226, 0.9);
+  color: #111827;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.invoice-cart-section .btn-inv-change-price:hover {
+  background: rgba(253, 244, 226, 1);
+}
+
+.invoice-cart-section .btn-inv-remove {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #f97373, #ef4444);
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.invoice-cart-section .invoice-summary-box {
+  background: linear-gradient(135deg, rgba(184, 115, 51, 0.9), rgba(201, 168, 108, 0.9));
+  color: #111827;
+  padding: 14px;
+  border-radius: 12px;
+  text-align: center;
+  margin: 8px 0;
+  border: 1px solid rgba(212, 175, 55, 0.7);
+  flex-shrink: 0;
+}
+
+.invoice-cart-section .invoice-summary-box h3 {
+  margin: 0;
+  font-size: 20px;
+  border: none;
+  padding: 0;
+}
+
+.invoice-cart-section .invoice-summary-rows {
+  background: #f9fafb;
+  border-radius: 10px;
+  padding: 10px;
+  margin: 6px 0;
+  flex-shrink: 0;
+}
+
+.invoice-cart-section .invoice-summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #374151;
+}
+
+.invoice-cart-section .invoice-summary-row:last-child {
+  font-weight: bold;
+  font-size: 17px;
+  border-top: 2px solid rgba(209, 213, 219, 0.9);
+  padding-top: 8px;
+  margin-top: 8px;
+  margin-bottom: 0;
+}
+
+.invoice-cart-section .invoice-action-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+  flex-shrink: 0;
+}
+
+.invoice-cart-section .btn-inv-checkout {
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.invoice-cart-section .btn-inv-checkout:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.invoice-cart-section .btn-inv-clear {
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  background: linear-gradient(135deg, #f97373, #ef4444);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.invoice-cart-section .btn-inv-clear:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.invoice-history-card {
+  margin-top: 20px;
+}
+
+/* نافذة تغيير السعر — ثيم داكن */
+.inv-modal-price .modal-content {
+  background: #ffffff;
+  border: 1px solid rgba(229, 231, 235, 0.9);
+  color: #111827;
+}
+
+.inv-modal-price .modal-header {
+  border-bottom-color: rgba(229, 231, 235, 0.9);
+}
+
+.inv-modal-price .modal-title {
+  color: #b87333;
+}
+
+.inv-modal-price .modal-footer {
+  border-top-color: rgba(229, 231, 235, 0.9);
+}
+
+.inv-modal-price .form-label {
+  color: #374151;
+}
+
+.inv-modal-price .form-control {
+  background: #f9fafb !important;
+  border: 1px solid rgba(209, 213, 219, 0.9) !important;
+  color: #111827 !important;
+}
+
+#modal-change-price-product-name {
+  color: #b87333;
+  font-weight: 600;
+}
+
+/* زر كشف حساب المورد ونافذته */
+.btn-supplier-statement {
+  background: rgba(253, 244, 226, 0.95);
+  border: 1px solid rgba(201, 168, 108, 0.8);
+  color: #111827;
+  padding: 4px 10px;
+  font-size: 12px;
+}
+
+.btn-supplier-statement:hover {
+  background: rgba(253, 244, 226, 1);
+  color: #111827;
+}
+
+.inv-supplier-modal {
+  background: #ffffff;
+  border: 1px solid rgba(229, 231, 235, 0.9);
+  color: #111827;
+}
+
+.inv-supplier-modal .modal-header {
+  border-bottom-color: rgba(229, 231, 235, 0.9);
+}
+
+.inv-supplier-modal .modal-title {
+  color: #b87333;
+}
+
+.inv-supplier-modal .inv-supplier-table {
+  color: #111827;
+}
+
+.inv-supplier-modal .inv-supplier-table th {
+  background: rgba(248, 250, 252, 0.98);
+  border-color: rgba(229, 231, 235, 0.9);
+  color: #111827;
+}
+
+.inv-supplier-modal .inv-supplier-table td {
+  border-color: rgba(229, 231, 235, 0.9);
+}
+
+#supplier-statement-meta {
+  color: #4b5563;
+}
+
+/* نافذة تفاصيل الفاتورة + زر التفاصيل */
+.btn-inv-details {
+  background: rgba(253, 244, 226, 0.95);
+  border: 1px solid rgba(201, 168, 108, 0.8);
+  color: #111827;
+  padding: 4px 10px;
+  font-size: 12px;
+}
+
+.btn-inv-details:hover {
+  background: rgba(253, 244, 226, 1);
+  color: #111827;
+}
+
+.inv-details-modal .modal-content {
+  background: #ffffff;
+  border: 1px solid rgba(229, 231, 235, 0.9);
+  color: #111827;
+}
+
+.inv-details-modal .modal-header {
+  border-bottom-color: rgba(229, 231, 235, 0.9);
+}
+
+.inv-details-modal .modal-title {
+  color: #b87333;
+}
+
+.inv-details-modal .modal-body {
+  color: #111827;
+}
+
+#inv-details-meta {
+  color: #4b5563;
+}
+
+.inv-details-modal .inv-details-table {
+  color: #111827;
+}
+
+.inv-details-modal .inv-details-table th {
+  background: rgba(248, 250, 252, 0.98);
+  border-color: rgba(229, 231, 235, 0.9);
+  color: #111827;
+}
+
+.inv-details-modal .inv-details-table td {
+  border-color: rgba(229, 231, 235, 0.9);
+}
+
+/* نقطة البيع: قائمة المنتجات ككروت */
+.pos-products-list {
+  min-height: 140px;
+  max-height: 380px;
+  overflow-y: auto;
+  border: 1px solid rgba(229, 231, 235, 0.9);
+  border-radius: 12px;
+  padding: 12px;
+  background: #f9fafb;
+}
+
+.pos-products-list .pos-products-placeholder {
+  color: #4b5563;
+  font-size: 14px;
+}
+
+.pos-products-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 1200px) {
+  .pos-products-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .pos-products-grid {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+}
+
+.pos-product-card {
+  background: #ffffff;
+  border: 1px solid rgba(229, 231, 235, 0.9);
+  border-radius: 12px;
+  padding: 12px;
+  color: #111827;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.pos-product-card:hover {
+  background: rgba(253, 244, 226, 0.9);
+  border-color: rgba(184, 115, 51, 0.7);
+}
+
+.pos-product-card .pos-card-name {
+  font-weight: 600;
+  color: #111827;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+
+.pos-product-card .pos-card-meta {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.pos-product-card .pos-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.pos-product-card .pos-card-actions input {
+  width: 60px;
+  padding: 6px 8px;
+  font-size: 13px;
+  background: #f9fafb;
+  border: 1px solid rgba(209, 213, 219, 0.9);
+  border-radius: 8px;
+  color: #111827;
+}
+
+.pos-product-card .btn-pos-add {
+  padding: 6px 12px;
+  font-size: 13px;
+  background: linear-gradient(135deg, rgba(184, 115, 51, 0.9), rgba(201, 168, 108, 0.9));
+  border: 1px solid rgba(184, 115, 51, 0.8);
+  color: #111827;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.pos-product-card .btn-pos-add:hover {
+  background: linear-gradient(135deg, rgba(184, 115, 51, 1), rgba(201, 168, 108, 1));
+}
+
+.pos-cart-wrap {
+  border: 1px solid rgba(229, 231, 235, 0.9);
+  border-radius: 12px;
+  padding: 12px;
+  background: #f9fafb;
+}
+
+.pos-cart-items {
+  font-size: 13px;
+  color: #111827;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+/* أزرار POS: بيع / حذف في الثيم الداكن */
+#pos-btn-checkout,
+#pos-btn-clear {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border-color: #000000 !important;
+}
+
+#pos-btn-checkout:hover,
+#pos-btn-checkout:focus,
+#pos-btn-checkout:active,
+#pos-btn-clear:hover,
+#pos-btn-clear:focus,
+#pos-btn-clear:active {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border-color: #000000 !important;
+  opacity: 0.9;
+}

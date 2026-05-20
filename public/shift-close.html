@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تقفيل خزن | SB Smart</title>
+  <link href="/vendor/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/vendor/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/electron-titlebar.css">
+</head>
+<body>
+  <button class="sidebar-toggle" id="sidebarToggle" type="button" aria-label="فتح القائمة">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h5 class="mb-0">
+        <i class="fas fa-tachometer-alt me-2"></i>
+        لوحة التحكم
+      </h5>
+    </div>
+    <div class="sidebar-body">
+      <ul class="sidebar-nav">
+        <li>
+          <a href="/dashboard">
+            <i class="fas fa-home"></i>
+            الرئيسية
+          </a>
+        </li>
+        <li>
+          <a href="/warehouses">
+            <i class="fas fa-warehouse"></i>
+            مخازن
+          </a>
+        </li>
+        <li>
+          <a href="/pos">
+            <i class="fas fa-cash-register"></i>
+            نقطة البيع
+          </a>
+        </li>
+        <li>
+          <a href="/expenses">
+            <i class="fas fa-money-bill-wave"></i>
+            المصروفات
+          </a>
+        </li>
+        <li>
+          <a href="/settings">
+            <i class="fas fa-cog"></i>
+            الإعدادات
+          </a>
+        </li>
+        <li class="mt-4">
+          <a href="/logout" class="sidebar-logout">
+            <i class="fas fa-sign-out-alt"></i>
+            تسجيل الخروج
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="main-content" id="mainContent">
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+      <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1">
+          <span class="brand-sb">SB</span><span class="brand-smart"> Smart</span>
+        </span>
+        <div class="navbar-nav ms-auto">
+          <span class="navbar-text" id="navbarUser">
+            <i class="fas fa-user me-1"></i>
+            <span id="userDisplayName">...</span>
+          </span>
+        </div>
+      </div>
+    </nav>
+
+    <div class="dashboard-container">
+      <div class="container">
+        <h1 class="page-title mb-4">
+          <i class="fas fa-lock me-2"></i>
+          تقفيل خزن (شفت نقطة البيع)
+        </h1>
+
+        <div class="row mb-4">
+          <div class="col-md-4">
+            <label class="form-label" for="shift-date">تاريخ الشفت</label>
+            <input type="date" class="form-control" id="shift-date">
+          </div>
+          <div class="col-md-4 d-flex align-items-end">
+            <button type="button" class="btn btn-dashboard btn-info" id="btn-load-shift">
+              <i class="fas fa-sync me-1"></i>
+              عرض الملخص
+            </button>
+          </div>
+          <div class="col-md-4 d-flex align-items-end">
+            <p id="shift-msg" class="form-message mt-2 mb-0"></p>
+          </div>
+        </div>
+
+        <ul class="nav nav-tabs tabs-sb mb-4" id="shiftTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tab-shift-payments" data-bs-toggle="tab" data-bs-target="#panel-shift-payments" type="button" role="tab">ملخص طرق الدفع</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-shift-receive" data-bs-toggle="tab" data-bs-target="#panel-shift-receive" type="button" role="tab">استلام المبالغ</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-shift-log" data-bs-toggle="tab" data-bs-target="#panel-shift-log" type="button" role="tab">سجل تقفيل الشفت</button>
+          </li>
+        </ul>
+
+        <div class="tab-content" id="shiftTabsContent">
+          <div class="tab-pane fade show active" id="panel-shift-payments" role="tabpanel">
+            <div class="warehouses-card card-table mb-4">
+              <h5 class="card-form-title">
+                <i class="fas fa-wallet me-2"></i>
+                ملخص حسب طرق الدفع (نقطة البيع فقط)
+              </h5>
+              <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                <small class="text-muted mb-0">الأرقام تشمل كل فواتير نقطة البيع للمستخدم الحالي.</small>
+                <button type="button" class="btn btn-sm btn-dashboard btn-info" id="btn-print-shift">
+                  <i class="fas fa-print me-1"></i>
+                  طباعة الملخص
+                </button>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-warehouses">
+                  <thead>
+                    <tr>
+                      <th>طريقة الدفع</th>
+                      <th>عدد الفواتير</th>
+                      <th>إجمالي المبلغ</th>
+                    </tr>
+                  </thead>
+                  <tbody id="shift-payments-tbody">
+                    <tr><td colspan="3" class="text-center text-muted">اختر التاريخ واضغط عرض الملخص.</td></tr>
+                  </tbody>
+                  <tfoot>
+                    <tr class="table-dark">
+                      <th>الإجمالي</th>
+                      <th id="shift-total-invoices">—</th>
+                      <th id="shift-grand-total-amount">—</th>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-pane fade" id="panel-shift-receive" role="tabpanel">
+            <div class="warehouses-card card-form mb-4">
+              <h5 class="card-form-title">
+                <i class="fas fa-hand-holding-usd me-2"></i>
+                استلام المبالغ
+              </h5>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label" for="receive-payment-method">طريقة الدفع</label>
+                  <select class="form-select" id="receive-payment-method">
+                    <option value="">— اختر طريقة الدفع —</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="receive-required-amount">المطلوب</label>
+                  <input type="number" class="form-control" id="receive-required-amount" readonly value="0">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="receive-employee">الموظف</label>
+                  <select class="form-select" id="receive-employee">
+                    <option value="">— اختر الموظف —</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="receive-paid-amount">المبلغ المستلم</label>
+                  <input type="number" class="form-control" id="receive-paid-amount" min="0" step="0.01" value="0">
+                </div>
+              </div>
+              <hr>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">المتبقي بعد الاستلام</label>
+                  <input type="text" class="form-control" id="receive-remaining-amount" readonly value="0.00">
+                </div>
+                <div class="col-md-6 d-flex align-items-end">
+                  <button type="button" class="btn btn-dashboard btn-info w-100" id="btn-apply-receive">
+                    <i class="fas fa-minus-circle me-1"></i>
+                    خصم من الملخص
+                  </button>
+                </div>
+              </div>
+              <p id="receive-msg" class="form-message mt-3 mb-0"></p>
+            </div>
+          </div>
+
+          <div class="tab-pane fade" id="panel-shift-log" role="tabpanel">
+            <div class="warehouses-card card-table mb-4">
+              <h5 class="card-form-title">
+                <i class="fas fa-history me-2"></i>
+                سجل تقفيل الشفت
+              </h5>
+              <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                <table class="table table-warehouses">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>التاريخ والوقت</th>
+                      <th>قام بالتقفيل</th>
+                      <th>طريقة الدفع</th>
+                      <th>الموظف (المستلم)</th>
+                      <th>المطلوب</th>
+                      <th>المستلم</th>
+                      <th>المتبقي</th>
+                    </tr>
+                  </thead>
+                  <tbody id="shift-closures-tbody">
+                    <tr><td colspan="8" class="text-center text-muted">لا يوجد بيانات بعد.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <footer class="text-center py-3 mt-5">
+      <div class="container-fluid">
+        <p class="mb-0 footer-text">
+          <i class="fas fa-copyright me-1"></i>
+          <span id="currentYear"></span> SB Smart · conver_lang
+        </p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/api-client.js"></script>
+  <script src="/js/electron-titlebar.js"></script>
+  <script src="/js/dashboard.js"></script>
+  <script src="/js/shift-close.js"></script>
+</body>
+</html>
+

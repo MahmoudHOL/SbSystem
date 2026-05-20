@@ -1,0 +1,250 @@
+/**
+ * صفحة المخازن - إضافة وعرض القائمة
+ */
+
+.page-title {
+  color: #111827;
+  font-weight: 600;
+}
+
+.warehouses-card {
+  background: #ffffff;
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(229, 231, 235, 0.9);
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 24px;
+  color: #111827;
+}
+
+.card-form-title {
+  color: #b87333;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.card-form .form-label {
+  color: #374151;
+}
+
+.card-form .form-control {
+  background: #f9fafb;
+  border: 1px solid rgba(209, 213, 219, 0.9);
+  color: #111827;
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+/* تاب إذن توريد: لا تقصّ قائمة اقتراحات اسم المنتج */
+#panel-products {
+  overflow: visible;
+}
+
+#panel-products .warehouses-card.card-form {
+  overflow: visible;
+}
+
+.product-name-suggestions {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  z-index: 1080;
+  margin-top: 4px;
+  max-height: 260px;
+  overflow-y: auto;
+  border-radius: 10px;
+  border: 1px solid rgba(209, 213, 219, 0.95);
+  background: #fff;
+}
+
+.product-name-suggestions .list-group-item {
+  cursor: pointer;
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+  padding: 0.5rem 0.75rem;
+}
+
+.product-name-suggestions .list-group-item:first-child {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.product-name-suggestions .list-group-item:last-child {
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.product-name-suggestions .list-group-item:hover,
+.product-name-suggestions .list-group-item:focus {
+  background: rgba(184, 115, 51, 0.12);
+}
+
+.card-form .form-control:focus {
+  background: #ffffff;
+  border-color: rgba(184, 115, 51, 0.8);
+  color: #111827;
+  box-shadow: 0 0 0 3px rgba(184, 115, 51, 0.22);
+}
+
+.form-message {
+  font-size: 0.9rem;
+  margin-bottom: 0;
+}
+
+.form-message.success { color: #7cb87c; }
+.form-message.error { color: #e8a0a0; }
+
+.table-warehouses {
+  color: #111827;
+  margin-bottom: 0;
+}
+
+.table-warehouses thead th {
+  border-bottom: 1px solid rgba(229, 231, 235, 0.9);
+  color: #b87333;
+  font-weight: 600;
+  padding: 14px 12px;
+}
+
+.table-warehouses tbody td {
+  border-bottom: 1px solid rgba(229, 231, 235, 0.8);
+  padding: 12px;
+  vertical-align: middle;
+}
+
+.table-warehouses tbody tr:hover {
+  background: rgba(253, 244, 226, 0.6);
+}
+
+.card-table .text-muted {
+  color: #6b7280 !important;
+}
+
+/* تابات المخازن / المنتجات */
+.nav-tabs.tabs-sb {
+  border-bottom: 1px solid rgba(229, 231, 235, 0.9);
+}
+
+.nav-tabs.tabs-sb .nav-link {
+  color: #4b5563;
+  border: 1px solid transparent;
+  border-radius: 10px 10px 0 0;
+  padding: 10px 20px;
+  font-weight: 500;
+}
+
+.nav-tabs.tabs-sb .nav-link:hover {
+  color: #b87333;
+  border-color: rgba(229, 231, 235, 0.9);
+}
+
+.nav-tabs.tabs-sb .nav-link.active {
+  color: #b87333;
+  background: #ffffff;
+  border-color: rgba(229, 231, 235, 0.9);
+  border-bottom-color: transparent;
+}
+
+.btn-delete-soft {
+  background: transparent;
+  border: 1px solid rgba(220, 38, 38, 0.4);
+  color: #b91c1c;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-delete-soft:hover {
+  background: rgba(254, 226, 226, 0.8);
+  color: #991b1b;
+}
+
+.input-quantity {
+  background: #f9fafb !important;
+  border: 1px solid rgba(209, 213, 219, 0.9) !important;
+  color: #111827 !important;
+  border-radius: 8px;
+  padding: 6px 10px;
+}
+
+.input-quantity:focus {
+  border-color: rgba(184, 115, 51, 0.8) !important;
+  box-shadow: 0 0 0 2px rgba(184, 115, 51, 0.22);
+}
+
+.input-warehouse-select {
+  background: #f9fafb !important;
+  border: 1px solid rgba(209, 213, 219, 0.9) !important;
+  color: #111827 !important;
+}
+
+/* سجل الشراء والبيع: Scroll داخل الجدول */
+.log-table-scroll {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.log-table-scroll table {
+  margin-bottom: 0;
+}
+
+.log-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 320px;
+}
+
+.log-invoice-input {
+  background: rgba(13, 13, 13, 0.8) !important;
+  border: 1px solid rgba(184, 115, 51, 0.3) !important;
+  color: #e8e4df !important;
+}
+
+.log-search-btn {
+  padding: 7px 12px;
+}
+
+/* نصوص المساعدة في تبويب سجل الشراء والبيع بالأبيض */
+.log-helper-text {
+  color: #374151 !important;
+}
+
+/* أزرار outline البيضاء في صفحة المخازن: اجعل نصها أسود دائماً */
+.warehouses-card .btn.btn-outline-light {
+  color: #111827 !important;
+  border-color: rgba(209, 213, 219, 0.9) !important;
+  background-color: #ffffff !important;
+}
+
+.warehouses-card .btn.btn-outline-light:hover {
+  background-color: #f3f4f6 !important;
+  color: #111827 !important;
+  border-color: rgba(156, 163, 175, 0.9) !important;
+}
+
+/* زر تفاصيل سجل النقل — مظهر ذهبي راقٍ */
+.btn-transfer-detail {
+  background: linear-gradient(135deg, #b87333, #c9a86c) !important;
+  color: #111827 !important;
+  border: 1px solid rgba(212, 175, 55, 0.7) !important;
+  border-radius: 10px;
+  padding: 6px 16px;
+  font-weight: 600;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 10px rgba(184, 115, 51, 0.35);
+}
+.btn-transfer-detail:hover {
+  background: linear-gradient(135deg, #c9a86c, #d4af37) !important;
+  color: #0d0d0d !important;
+  border-color: rgba(212, 175, 55, 0.8) !important;
+  box-shadow: 0 4px 18px rgba(212, 175, 55, 0.45);
+  transform: translateY(-1px);
+}
+.btn-transfer-detail:focus {
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.35);
+}

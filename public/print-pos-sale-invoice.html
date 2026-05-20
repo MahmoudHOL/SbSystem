@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>فاتورة بيع (POS)</title>
+  <link rel="stylesheet" href="/css/print-invoice.css">
+</head>
+<body>
+  <div class="invoice-paper">
+    <div id="watermark" class="invoice-watermark"></div>
+    <div id="content" class="invoice-paper-main">
+      <p class="msg">جاري تحميل الفاتورة...</p>
+    </div>
+    <div class="no-print">
+      <button type="button" id="btn-print"><span id="btn-print-text">طباعة</span></button>
+    </div>
+  </div>
+  <script src="/js/print-pos-sale-invoice.js"></script>
+</body>
+</html>

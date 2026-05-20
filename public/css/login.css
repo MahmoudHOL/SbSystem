@@ -1,0 +1,308 @@
+/**
+ * SB Smart - صفحة تسجيل الدخول
+ * ثيم فاتح وأنيق مع إبقاء النحاس/الذهبي كلون هوية رئيسي
+ */
+
+:root {
+  --bg-page: #f5f5f9;
+  --bg-card: #ffffff;
+  --copper: #b87333;
+  --copper-light: #c9a86c;
+  --rose-gold: #b76e79;
+  --gold: #d4af37;
+  --glow: rgba(184, 115, 51, 0.18);
+  --text: #1f2933;
+  --text-muted: #6b7280;
+  --border: rgba(209, 213, 219, 0.9);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: radial-gradient(circle at top left, #ffffff 0%, #f5f5f9 45%, #edf2ff 100%);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Scrollbar أنيق (يعمل في Chromium/Electron) */
+body::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+body::-webkit-scrollbar-track {
+  background: #050505;
+}
+body::-webkit-scrollbar-thumb {
+  background: rgba(184, 115, 51, 0.55);
+  border-radius: 4px;
+}
+body::-webkit-scrollbar-thumb:hover {
+  background: rgba(201, 168, 108, 0.85);
+}
+
+/* خلفية خطوط الدوائر/الدوائر */
+.bg-circuit {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(90deg, rgba(209, 213, 219, 0.7) 1px, transparent 1px),
+    linear-gradient(rgba(209, 213, 219, 0.7) 1px, transparent 1px);
+  background-size: 72px 72px;
+  opacity: 0.18;
+  pointer-events: none;
+}
+
+.bg-glow {
+  position: fixed;
+  width: 80%;
+  height: 80%;
+  top: 10%;
+  left: 10%;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(184, 115, 51, 0.16) 0%, transparent 55%),
+    radial-gradient(circle at 80% 20%, rgba(201, 168, 108, 0.14) 0%, transparent 55%);
+  opacity: 1;
+  pointer-events: none;
+}
+
+/* حاوية صفحة الدخول: نصفين */
+.login-wrap {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: row;
+}
+
+/* النصف الأول: الشعار مثل الصورة (خلفية ضبابية + نص SB) */
+.login-brand-side {
+  flex: 0 0 50%;
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.brand-blur {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top, #ffffff 0%, #f5f5f9 45%, #e5ecff 100%);
+  background-image:
+    radial-gradient(ellipse 100% 80% at 50% 30%, rgba(184, 115, 51, 0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 60% at 80% 20%, rgba(201, 168, 108, 0.12) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 60% at 20% 80%, rgba(184, 115, 51, 0.08) 0%, transparent 55%);
+  filter: blur(0.5px);
+  backdrop-filter: blur(10px);
+}
+
+.brand-circuit {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(90deg, rgba(209, 213, 219, 0.7) 1px, transparent 1px),
+    linear-gradient(rgba(226, 232, 240, 0.9) 1px, transparent 1px);
+  background-size: 52px 52px;
+  opacity: 0.5;
+}
+
+.brand-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 2rem;
+}
+
+.brand-content .brand-title {
+  font-size: clamp(4rem, 12vw, 8rem);
+  font-weight: 800;
+  color: var(--copper);
+  text-shadow: 0 14px 40px rgba(15, 23, 42, 0.25);
+  letter-spacing: 0.08em;
+  line-height: 1;
+  margin: 0;
+}
+
+.brand-content .brand-sub {
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  color: var(--copper-light);
+  margin-top: 0.5rem;
+  font-weight: 600;
+  text-shadow: 0 10px 25px rgba(148, 163, 184, 0.55);
+}
+
+.brand-content .brand-tagline {
+  font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+  color: var(--text-muted);
+  margin-top: 1rem;
+  opacity: 0.95;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+/* النصف الثاني: نموذج الدخول */
+.login-form-side {
+  flex: 0 0 50%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: transparent;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--bg-card);
+  border: 1px solid rgba(209, 213, 219, 0.9);
+  border-radius: 12px;
+  padding: 2.5rem;
+  box-shadow:
+    0 18px 45px rgba(15, 23, 42, 0.16),
+    0 0 0 1px rgba(226, 232, 240, 0.9);
+}
+
+.brand-in-card {
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.brand-in-card-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--copper);
+  display: block;
+  letter-spacing: 0.05em;
+}
+
+.brand-in-card-sub {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* شعار SB (داخل الكارد - للتوافق) */
+.brand-title { font-size: 2.5rem; font-weight: 700; color: var(--copper); }
+.brand-sub { font-size: 1.1rem; color: var(--copper-light); font-weight: 500; }
+.brand-tagline { font-size: 0.85rem; color: var(--text-muted); }
+
+/* نموذج الدخول */
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: #f9fafb;
+  border: 1px solid rgba(209, 213, 219, 0.9);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: rgba(184, 115, 51, 0.8);
+  box-shadow: 0 0 0 3px rgba(184, 115, 51, 0.22);
+}
+
+.form-group input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.8;
+}
+
+.btn-login {
+  width: 100%;
+  padding: 0.9rem;
+  margin-top: 0.5rem;
+  background: linear-gradient(135deg, var(--copper), var(--copper-light));
+  border: none;
+  border-radius: 6px;
+  color: #111827;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s, box-shadow 0.2s;
+}
+
+.btn-login:hover {
+  opacity: 0.95;
+  box-shadow: 0 0 25px var(--glow);
+}
+
+.btn-login:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* رسالة الخطأ */
+.msg-error {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: rgba(248, 113, 113, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: 6px;
+  color: #b91c1c;
+  font-size: 0.9rem;
+  display: none;
+}
+
+.msg-error.visible {
+  display: block;
+}
+
+/* تذييل */
+.login-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.login-footer a {
+  color: var(--copper-light);
+  text-decoration: none;
+}
+
+.login-footer a:hover {
+  text-decoration: underline;
+}
+
+/* شاشات صغيرة: النصفان فوق بعض */
+@media (max-width: 900px) {
+  .login-wrap {
+    flex-direction: column;
+  }
+
+  .login-brand-side {
+    min-height: 40vh;
+    flex: 0 0 auto;
+  }
+
+  .brand-content .brand-title {
+    font-size: 3.5rem;
+  }
+
+  .login-form-side {
+    min-height: auto;
+    flex: 1;
+    padding: 2rem 1rem;
+  }
+}
